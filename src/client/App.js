@@ -1,11 +1,12 @@
-import React from 'react';
+import React from "react";
+import Routes from "./Routes";
 
-import '../css/normalize.css';
+import "../css/normalize.css";
 
 function App() {
   return (
     <div className="App">
-      <h1>Test</h1>
+      <Routes />
     </div>
   );
 }
