@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import AppConfig from "../AppConfig";
 import axios from "axios";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 class Login extends Component {
   loginEndpoint = AppConfig.API_URL + this.props.match.params[0] + "api/login";
@@ -31,8 +31,13 @@ class Login extends Component {
         password: this.state.password
       })
       .then(res => {
-        Cookies.set('token-type', res.data.token_type);
-        Cookies.set('token', res.data.token);
+        console.log(res.data);
+        Cookies.set("token-type", res.data.token_type, {
+          expires: res.data.expires_in / 86400
+        });
+        Cookies.set("token", res.data.token, { 
+          expires: res.data.expires_in / 86400 
+        });
         this.setState({
           error: {
             status: res.status,
@@ -47,7 +52,7 @@ class Login extends Component {
               status: error.response.status,
               statusText: error.response.statusText
             }
-          })
+          });
         }
       });
 
