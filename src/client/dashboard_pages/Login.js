@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import AppConfig from "../AppConfig";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { Redirect } from "react-router-dom";
 
 class Login extends Component {
-  loginEndpoint = AppConfig.API_URL + this.props.match.params.company_subdir + "/api/login";
+  loginEndpoint =
+    AppConfig.API_URL + this.props.match.params.company_subdir + "/api/login";
+  loginRedirectIfSuccessful = `/${this.props.match.params.company_subdir}/dashboard`;
 
   state = {
     email_address: "",
@@ -12,7 +15,8 @@ class Login extends Component {
     error: {
       status: null,
       statusText: ""
-    }
+    },
+    authed: false
   };
 
   onChange = e => {
@@ -35,14 +39,15 @@ class Login extends Component {
         Cookies.set("token-type", res.data.token_type, {
           expires: res.data.expires_in / 86400
         });
-        Cookies.set("token", res.data.token, { 
-          expires: res.data.expires_in / 86400 
+        Cookies.set("token", res.data.token, {
+          expires: res.data.expires_in / 86400
         });
         this.setState({
           error: {
             status: res.status,
             statusText: res.statusText
-          }
+          },
+          authed: true
         });
       })
       .catch(error => {
@@ -60,6 +65,7 @@ class Login extends Component {
       email_address: "",
       password: ""
     });
+
   };
 
   render() {
@@ -85,6 +91,9 @@ class Login extends Component {
           />
           <button type="submit">Login</button>
         </form>
+        {this.state.authed ? (
+          <Redirect to={this.loginRedirectIfSuccessful} />
+        ) : null}
       </div>
     );
   }

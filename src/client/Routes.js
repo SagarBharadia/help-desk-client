@@ -17,7 +17,7 @@ class Routes extends React.Component {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/:company_subdir/" render={(props) => Guest(Login, Dashboard, props)} />
+          <Route exact path="/:company_subdir/" render={(props) => Guest(Login, props)} />
           <Route exact path="/:company_subdir/dashboard" render={(props) => Protected(Dashboard, props) } />
         </Switch>
       </Router>
