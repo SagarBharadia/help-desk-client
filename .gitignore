@@ -21,6 +21,8 @@
 .env.production.local
 yarninstructions.txt
 
+/src/client/AppConfig.js
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
