@@ -1,19 +1,17 @@
 import React from 'react'
-import Cookie from 'js-cookie';
-import axios from 'axios';
+import Cookie from 'js-cookie'
+import { Redirect } from 'react-router-dom';
 
-function Protected(permission, Component, props) {
-    // See if token exists and if it does then send request to see permission is allowed
+function Protected(Component, props) {
+    // Currently only checks if token is valid, need to make it so it pings API to check if token
+    // is relevant to the company_subdir or not
 
-    // If token doesn't exist, redirect to login route with callback to route they were trying to access
+    if(Cookie.get('token')) {
+        return <Component {...props} />
+    } else {
+        return <Redirect to={`/${props.match.params.company_subdir}/`}/>
+    }
 
-    // If token exists send request to API to see if allowed or not.
-
-    return (
-        <div>
-            
-        </div>
-    )
 }
 
-export default Protected;
+export default Protected

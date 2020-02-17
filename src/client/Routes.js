@@ -6,16 +6,23 @@ import Home from './website_pages/Home';
 
 // Importing dashboard pages
 import Login from './dashboard_pages/Login';
+import Dashboard from './dashboard_pages/Dashboard';
+import Protected from "./Protected";
+import Guest from "./Guest";
 
-function Routes() {
-  return (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/*/" component={Login} />
-      </Switch>
-    </Router>
-  );
+
+class Routes extends React.Component {
+  render() {
+    return (
+      <Router>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/:company_subdir/" render={(props) => Guest(Login, Dashboard, props)} />
+          <Route exact path="/:company_subdir/dashboard" render={(props) => Protected(Dashboard, props) } />
+        </Switch>
+      </Router>
+    )
+  };
 }
 
 export default Routes;

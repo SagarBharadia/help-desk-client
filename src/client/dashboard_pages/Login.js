@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 class Login extends Component {
-  loginEndpoint = AppConfig.API_URL + this.props.match.params[0] + "api/login";
+  loginEndpoint = AppConfig.API_URL + this.props.match.params.company_subdir + "/api/login";
 
   state = {
     email_address: "",
