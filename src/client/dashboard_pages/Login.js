@@ -35,7 +35,6 @@ class Login extends Component {
         password: this.state.password
       })
       .then(res => {
-        console.log(res.data);
         Cookies.set("token-type", res.data.token_type, {
           expires: res.data.expires_in / 86400
         });
