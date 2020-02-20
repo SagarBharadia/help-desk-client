@@ -6,9 +6,7 @@ import "../css/normalize.css";
 class App extends Component {
   render() {
     return (
-      <div className="App">
         <Routes />
-      </div>
     );
   }
 }

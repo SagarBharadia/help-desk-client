@@ -1,11 +1,17 @@
 import React, { Component } from 'react'
+import Header from '../layout/Header';
+import Footer from '../layout/Footer';
 
-export class Home extends Component {
+class Home extends Component {
     render() {
         return (
-            <section>
-                <h1>Home</h1>
-            </section>
+            <div>
+                <Header />
+                <section>
+                    <h1>Home</h1>
+                </section>
+                <Footer />
+            </div>
         )
     }
 }
