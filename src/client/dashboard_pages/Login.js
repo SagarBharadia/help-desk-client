@@ -5,9 +5,10 @@ import Cookies from "js-cookie";
 import { Redirect } from "react-router-dom";
 
 class Login extends Component {
+  company_subdir = this.props.match.company_subdir;
   loginEndpoint =
-    AppConfig.API_URL + this.props.match.params.company_subdir + "/api/login";
-  loginRedirectIfSuccessful = `/${this.props.match.params.company_subdir}/dashboard`;
+    AppConfig.API_URL + this.company_subdir + "/api/login";
+  loginRedirectIfSuccessful = `/${this.company_subdir}/dashboard`;
 
   state = {
     email_address: "",
