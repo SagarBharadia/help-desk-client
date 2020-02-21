@@ -5,9 +5,8 @@ import Cookies from "js-cookie";
 import { Redirect } from "react-router-dom";
 
 class Login extends Component {
-  company_subdir = this.props.match.company_subdir;
-  loginEndpoint =
-    AppConfig.API_URL + this.company_subdir + "/api/login";
+  company_subdir = this.props.match.params.company_subdir;
+  loginEndpoint = AppConfig.API_URL + this.company_subdir + "/api/login";
   loginRedirectIfSuccessful = `/${this.company_subdir}/dashboard`;
 
   state = {
@@ -69,26 +68,39 @@ class Login extends Component {
 
   render() {
     return (
-      <div>
-        {this.state.error.statusText}
-        <form onSubmit={this.onSubmit}>
-          <label>Email Address</label>
-          <input
-            type="email"
-            name="email_address"
-            onChange={this.onChange}
-            value={this.state.email_address}
-            required
-          />
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            onChange={this.onChange}
-            value={this.state.password}
-            required
-          />
-          <button type="submit">Login</button>
+      <div className="w-100vw h-100vh d-flex flex-column justify-center align-center">
+        <div className={this.state.error.statusText ? "d-block" : "d-none"}>
+          <p>{this.state.error.statusText}</p>
+        </div>
+        <form
+          className="d-flex flex-column justify-flex-start align-center"
+          onSubmit={this.onSubmit}
+        >
+          <div className="pb-16 d-flex flex-column">
+            <label className="align-self-start" htmlFor="email_address">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email_address"
+              onChange={this.onChange}
+              value={this.state.email_address}
+              required
+            />
+          </div>
+          <div className="pb-16 d-flex flex-column">
+            <label className="align-self-start" htmlFor="password">
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              onChange={this.onChange}
+              value={this.state.password}
+              required
+            />
+          </div>
+          <button className="align-self-start" type="submit">Login</button>
         </form>
         {this.state.authed ? (
           <Redirect to={this.loginRedirectIfSuccessful} />
