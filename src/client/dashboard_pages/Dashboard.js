@@ -1,11 +1,14 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
+import DashboardAppBar from "./layout/DashboardAppBar";
 
 class Dashboard extends Component {
-    render() {
-        return (
-            <h1>Dashboard</h1>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <DashboardAppBar {...this.props} />
+      </div>
+    );
+  }
 }
 
-export default Dashboard
+export default Dashboard;

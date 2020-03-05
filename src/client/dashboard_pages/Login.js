@@ -100,7 +100,9 @@ class Login extends Component {
               required
             />
           </div>
-          <button className="align-self-start" type="submit">Login</button>
+          <button className="align-self-start" type="submit">
+            Login
+          </button>
         </form>
         {this.state.authed ? (
           <Redirect to={this.loginRedirectIfSuccessful} />
