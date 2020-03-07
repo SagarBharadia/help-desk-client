@@ -7,8 +7,9 @@ import Home from "./website_pages/Home";
 // Importing dashboard pages
 import Login from "./dashboard_pages/Login";
 import Dashboard from "./dashboard_pages/Dashboard";
-import Protected from "./Protected";
-import Guest from "./Guest";
+
+// Importing error pages
+import Error404 from "./website_pages/error_pages/Error404";
 
 class Routes extends React.Component {
   render() {
@@ -19,13 +20,14 @@ class Routes extends React.Component {
           <Route
             exact
             path="/:company_subdir/"
-            render={props => Guest(Login, props)}
+            render={props => <Login {...this.props} {...props} />}
           />
           <Route
             exact
             path="/:company_subdir/dashboard"
-            render={props => Protected(Dashboard, props)}
+            render={props => <Dashboard {...this.props} {...props} />}
           />
+          <Route render={props => <Error404 {...props} />} />
         </Switch>
       </Router>
     );

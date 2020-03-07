@@ -12,11 +12,10 @@ class Login extends Component {
   state = {
     email_address: "",
     password: "",
-    error: {
+    response: {
       status: null,
       statusText: ""
-    },
-    authed: false
+    }
   };
 
   onChange = e => {
@@ -41,18 +40,22 @@ class Login extends Component {
         Cookies.set("token", res.data.token, {
           expires: res.data.expires_in / 86400
         });
+        Cookies.set("auth-company-subdir", res.data.company_subdir, {
+          expires: res.data.expires_in / 86400
+        });
         this.setState({
-          error: {
+          response: {
             status: res.status,
             statusText: res.statusText
-          },
-          authed: true
+          }
         });
+        this.props.setAppState("authenticated", true);
+        console.log(this.props.authed);
       })
       .catch(error => {
         if (error.response) {
           this.setState({
-            error: {
+            response: {
               status: error.response.status,
               statusText: error.response.statusText
             }
@@ -68,18 +71,13 @@ class Login extends Component {
 
   render() {
     return (
-      <div className="w-100vw h-100vh d-flex flex-column justify-center align-center">
-        <div className={this.state.error.statusText ? "d-block" : "d-none"}>
-          <p>{this.state.error.statusText}</p>
+      <div>
+        <div>
+          <p>{this.state.response.statusText}</p>
         </div>
-        <form
-          className="d-flex flex-column justify-flex-start align-center"
-          onSubmit={this.onSubmit}
-        >
-          <div className="pb-16 d-flex flex-column">
-            <label className="align-self-start" htmlFor="email_address">
-              Email Address
-            </label>
+        <form onSubmit={this.onSubmit}>
+          <div>
+            <label htmlFor="email_address">Email Address</label>
             <input
               type="email"
               name="email_address"
@@ -88,10 +86,8 @@ class Login extends Component {
               required
             />
           </div>
-          <div className="pb-16 d-flex flex-column">
-            <label className="align-self-start" htmlFor="password">
-              Password
-            </label>
+          <div>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               name="password"
@@ -100,11 +96,9 @@ class Login extends Component {
               required
             />
           </div>
-          <button className="align-self-start" type="submit">
-            Login
-          </button>
+          <button type="submit">Login</button>
         </form>
-        {this.state.authed ? (
+        {this.props.authenticated ? (
           <Redirect to={this.loginRedirectIfSuccessful} />
         ) : null}
       </div>

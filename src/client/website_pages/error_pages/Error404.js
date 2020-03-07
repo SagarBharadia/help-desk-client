@@ -1,9 +1,13 @@
-import React from "react";
+import React, { Component } from "react";
 
-export default function Error404() {
-  return (
-    <div>
-      <h1>404 not found.</h1>
-    </div>
-  );
+class Error404 extends Component {
+  render() {
+    return (
+      <div>
+        <h1>404 not found.</h1>
+      </div>
+    );
+  }
 }
+
+export default Error404;

@@ -44,7 +44,7 @@ class DashboardAppBar extends Component {
       >
         <List>
           {this.drawerNavListItems.map(item => (
-            <Link href={item.link}>
+            <Link key={item.name + "-link"} href={item.link}>
               <ListItem button key={item.name}>
                 <ListItemText primary={item.name} />
               </ListItem>
