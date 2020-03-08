@@ -8,10 +8,11 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText,
-  Link
+  ListItemText
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
+
+import { Link } from "react-router-dom";
 
 class DashboardAppBar extends Component {
   baselink = "/" + this.props.match.params.company_subdir;
@@ -44,11 +45,9 @@ class DashboardAppBar extends Component {
       >
         <List>
           {this.drawerNavListItems.map(item => (
-            <Link key={item.name + "-link"} href={item.link}>
-              <ListItem button key={item.name}>
-                <ListItemText primary={item.name} />
-              </ListItem>
-            </Link>
+            <ListItem component={Link} to={item.link} button key={item.name}>
+              <ListItemText primary={item.name} />
+            </ListItem>
           ))}
         </List>
       </div>
