@@ -45,7 +45,15 @@ class DashboardAppBar extends Component {
       >
         <List>
           {this.drawerNavListItems.map(item => (
-            <ListItem component={Link} to={item.link} button key={item.name}>
+            <ListItem
+              selected={
+                this.props.location.pathname === item.link ? true : false
+              }
+              component={Link}
+              to={item.link}
+              button
+              key={item.name}
+            >
               <ListItemText primary={item.name} />
             </ListItem>
           ))}
