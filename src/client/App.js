@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Routes from "./Routes";
+import Routes from "./routes/Routes";
 import Cookies from "js-cookie";
 
 import "../css/normalize.css";
