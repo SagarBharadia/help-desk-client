@@ -50,7 +50,6 @@ class Login extends Component {
           }
         });
         this.props.setAppState("authenticated", true);
-        console.log(this.props.authed);
       })
       .catch(error => {
         if (error.response) {
