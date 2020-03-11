@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import AppConfig from "../AppConfig";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Redirect } from "react-router-dom";
+import APIEndpoints from "../APIEndpoints";
 
 class Login extends Component {
   company_subdir = this.props.match.params.company_subdir;
-  loginEndpoint = AppConfig.API_URL + this.company_subdir + "/api/login";
+  loginEndpoint = APIEndpoints.get("login", this.company_subdir);
   loginRedirectIfSuccessful = `/${this.company_subdir}/dashboard`;
 
   state = {
