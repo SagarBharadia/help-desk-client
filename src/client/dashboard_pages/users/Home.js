@@ -7,14 +7,16 @@ import {
   Typography,
   Container,
   Breadcrumbs,
-  Link as MuiLink
+  Link as MuiLink,
+  Box,
+  Button
 } from "@material-ui/core";
 
 class Home extends Component {
   company_subdir = this.props.match.params.company_subdir;
   render() {
     return (
-      <div>
+      <Box>
         <DashboardAppBar {...this.props} />
         <Container>
           <Breadcrumbs
@@ -30,16 +32,28 @@ class Home extends Component {
             </MuiLink>
             <Typography color="textPrimary">Users</Typography>
           </Breadcrumbs>
-          <Typography
-            component="h1"
-            variant="h4"
+          <Box
+            display="flex"
+            flexDirection="row"
+            flexWrap="wrap"
             className="standard-margin-bottom"
           >
-            Users
-          </Typography>
+            <Typography component="h1" variant="h4">
+              Users
+            </Typography>
+            <Button
+              component={Link}
+              variant="contained"
+              color="primary"
+              style={{ marginLeft: "20px" }}
+              to={"/" + this.company_subdir + "/users/create"}
+            >
+              Create User
+            </Button>
+          </Box>
           <UsersTable company_subdir={this.company_subdir} />
         </Container>
-      </div>
+      </Box>
     );
   }
 }
