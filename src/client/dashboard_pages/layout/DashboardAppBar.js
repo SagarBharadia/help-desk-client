@@ -64,9 +64,9 @@ class DashboardAppBar extends Component {
 
   render() {
     return (
-      <AppBar position="fixed">
+      <AppBar position="sticky" style={{ marginBottom: "40px" }}>
         <Container>
-          <Toolbar>
+          <Toolbar disableGutters>
             <IconButton
               onClick={this.toggleDrawer}
               edge="start"
@@ -87,15 +87,15 @@ class DashboardAppBar extends Component {
               John Doe
             </Typography>
           </Toolbar>
-          <Drawer
-            anchor="left"
-            open={this.state.drawerOpen}
-            onClose={this.toggleDrawer}
-            style={{ width: "auto" }}
-          >
-            {this.drawerNavList()}
-          </Drawer>
         </Container>
+        <Drawer
+          anchor="left"
+          open={this.state.drawerOpen}
+          onClose={this.toggleDrawer}
+          style={{ width: "200px" }}
+        >
+          {this.drawerNavList()}
+        </Drawer>
       </AppBar>
     );
   }

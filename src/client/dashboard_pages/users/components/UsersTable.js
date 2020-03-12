@@ -1,8 +1,81 @@
 import React, { Component } from "react";
+import APIEndpoints from "../../../APIEndpoints";
+import axios from "axios";
+import Cookies from "js-cookie";
+
+import {
+  Table,
+  TableBody,
+  TableContainer,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  Button
+} from "@material-ui/core";
 
 class UsersTable extends Component {
+  company_subdir = this.props.company_subdir;
+  getAllUsersEndpoint = APIEndpoints.get("getAllUsers", this.company_subdir);
+
+  state = {
+    users: {}
+  };
+
+  componentDidMount() {
+    const options = {
+      headers: {
+        Authorization: "Bearer " + Cookies.get("token")
+      }
+    };
+    axios
+      .get(this.getAllUsersEndpoint, options)
+      .then(res => res.data)
+      .then(data => {
+        this.setState({
+          users: data.data
+        });
+      });
+  }
+
   render() {
-    return <div></div>;
+    return (
+      <TableContainer component={Paper}>
+        <Table aria-label="table containing the users">
+          <TableHead>
+            <TableRow>
+              <TableCell>#</TableCell>
+              <TableCell align="right">Name</TableCell>
+              <TableCell align="right">Email Address</TableCell>
+              <TableCell align="right">Active</TableCell>
+              <TableCell align="right">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.keys(this.state.users).map(key => {
+              let user = this.state.users[key];
+              return (
+                <TableRow key={user.id}>
+                  <TableCell component="th" scope="row">
+                    {user.id}
+                  </TableCell>
+                  <TableCell align="right">
+                    {user.first_name + " " + user.second_name}
+                  </TableCell>
+                  <TableCell align="right">{user.email_address}</TableCell>
+                  <TableCell align="right">{user.active}</TableCell>
+                  <TableCell align="right">
+                    <Button variant="contained" color="primary">
+                      Edit
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
   }
 }
 
