@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import APIEndpoints from "../../../APIEndpoints";
 import axios from "axios";
 import Cookies from "js-cookie";
+import ErrorIcon from "@material-ui/icons/Error";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Table,
@@ -63,9 +66,20 @@ class UsersTable extends Component {
                     {user.first_name + " " + user.second_name}
                   </TableCell>
                   <TableCell align="right">{user.email_address}</TableCell>
-                  <TableCell align="right">{user.active}</TableCell>
                   <TableCell align="right">
-                    <Button variant="contained" color="primary">
+                    {user.active === 1 ? (
+                      <CheckCircleIcon style={{ color: "#2ecc71" }} />
+                    ) : (
+                      <ErrorIcon style={{ color: "#e74c3c" }} />
+                    )}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      component={Link}
+                      variant="contained"
+                      color="primary"
+                      to={"/" + this.company_subdir + "/users/edit/" + user.id}
+                    >
                       Edit
                     </Button>
                   </TableCell>
