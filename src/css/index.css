@@ -10,3 +10,48 @@
 .standard-margin-bottom {
   margin-bottom: 20px !important;
 }
+
+/*
+ * Bigger than XS breakpoint (600px)
+ */
+@media screen and (min-width: 0px) {
+  .xs-full-width {
+    width: 100%;
+  }
+}
+
+/*
+ * Bigger than SM breakpoint (600px)
+ */
+@media screen and (min-width: 600px) {
+  .sm-full-width {
+    width: 100%;
+  }
+  .sm-half-width {
+    width: calc(50% - 20px);
+  }
+}
+
+/*
+ * Bigger than MD breakpoint (960px)
+ */
+@media screen and (min-width: 960px) {
+  .md-third-width {
+    width: calc(33% - 20px);
+  }
+  .md-half-width {
+    width: calc(50% - 20px);
+  }
+}
+
+/*
+ * Bigger than LG breakpoint (1280px)
+ */
+@media screen and (min-width: 1280px) {
+}
+
+/*
+ * Bigger than XL breakpoint (1920px)
+ */
+@media screen and (min-width: 1920px) {
+}

@@ -35,13 +35,13 @@ class Login extends Component {
       })
       .then(res => {
         Cookies.set("token-type", res.data.token_type, {
-          expires: res.data.expires_in / 86400
+          expires: res.data.expires_in / 1440
         });
         Cookies.set("token", res.data.token, {
-          expires: res.data.expires_in / 86400
+          expires: res.data.expires_in / 1440
         });
         Cookies.set("auth-company-subdir", res.data.company_subdir, {
-          expires: res.data.expires_in / 86400
+          expires: res.data.expires_in / 1440
         });
         this.setState({
           response: {

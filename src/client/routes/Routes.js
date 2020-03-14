@@ -13,6 +13,7 @@ import Dashboard from "../dashboard_pages/Dashboard";
 
 // Importing User Dashboard Pages
 import { default as UsersHome } from "../dashboard_pages/users/Home";
+import { default as UsersCreate } from "../dashboard_pages/users/Create";
 
 // Importing error pages
 import Error404 from "../website_pages/error_pages/Error404";
@@ -40,6 +41,13 @@ class Routes extends React.Component {
             path="/:company_subdir/users"
             render={props => (
               <Guarded page={UsersHome} {...this.props} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/:company_subdir/users/create"
+            render={props => (
+              <Guarded page={UsersCreate} {...this.props} {...props} />
             )}
           />
           <Route render={props => <Error404 {...props} />} />
