@@ -78,9 +78,9 @@ class UsersTable extends Component {
                       component={Link}
                       variant="contained"
                       color="primary"
-                      to={"/" + this.company_subdir + "/users/edit/" + user.id}
+                      to={"/" + this.company_subdir + "/users/" + user.id}
                     >
-                      Edit
+                      View
                     </Button>
                   </TableCell>
                 </TableRow>

@@ -9,7 +9,8 @@ import Axios from "axios";
 
 class App extends Component {
   state = {
-    authenticated: false
+    authenticated: false,
+    loaded: false
   };
 
   setAppState = (key, value) => {
@@ -34,23 +35,30 @@ class App extends Component {
       Axios.get(checkTokenEndpoint, options)
         .then(res => {
           if (res.status === 200) {
-            this.setState({ authenticated: true });
+            this.setState({ authenticated: true, loaded: true });
           }
         })
         .catch(error => {
           Cookies.remove("token");
           Cookies.remove("token-type");
           Cookies.remove("auth-company-subdir");
+          this.setState({ loaded: true });
         });
     }
   }
 
   render() {
     return (
-      <Routes
-        setAppState={this.setAppState}
-        authenticated={this.state.authenticated}
-      />
+      <div>
+        {this.state.loaded ? (
+          <Routes
+            setAppState={this.setAppState}
+            authenticated={this.state.authenticated}
+          />
+        ) : (
+          "Loading"
+        )}
+      </div>
     );
   }
 }
