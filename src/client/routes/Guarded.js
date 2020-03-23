@@ -11,8 +11,6 @@ import {
   Typography
 } from "@material-ui/core";
 
-import Error404 from "../website_pages/error_pages/Error404";
-
 class Guarded extends Component {
   state = {
     allowed: false,
@@ -87,7 +85,7 @@ class Guarded extends Component {
         ) : this.state.redirectToThisHelpDesk ? (
           <Redirect to={this.loginToThisHelpDeskHref} />
         ) : (
-          <Error404 />
+          <Redirect to={this.loginToThisHelpDeskHref} />
         )}
       </div>
     );
