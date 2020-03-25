@@ -367,7 +367,10 @@ class Create extends Component {
               </Typography>
               <List>
                 {this.state.roleOnShow.permissions.map(permission => (
-                  <ListItem key={permission.permission_action.action}>
+                  <ListItem
+                    disableGutters
+                    key={permission.permission_action.action}
+                  >
                     <ListItemText primary={permission.permission_action.name} />
                   </ListItem>
                 ))}

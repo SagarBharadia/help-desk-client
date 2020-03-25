@@ -44,6 +44,8 @@ class App extends Component {
           Cookies.remove("auth-company-subdir");
           this.setState({ loaded: true });
         });
+    } else {
+      this.setState({ loaded: true });
     }
   }
 

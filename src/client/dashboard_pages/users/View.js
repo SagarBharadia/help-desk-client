@@ -6,6 +6,8 @@ import Cookies from "js-cookie";
 import APIEndpoints from "../../APIEndpoints";
 
 import { Link } from "react-router-dom";
+import ErrorIcon from "@material-ui/icons/Error";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Box,
@@ -20,8 +22,13 @@ import {
   Button,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  ExpansionPanelSummary,
+  ExpansionPanel,
+  ExpansionPanelDetails
 } from "@material-ui/core";
+
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { Alert } from "@material-ui/lab";
 
@@ -30,12 +37,14 @@ class View extends Component {
   user_id = this.props.match.params.user_id;
   state = {
     downloadedRoles: [],
-    first_name: "",
-    second_name: "",
-    email_address: "",
-    password: "",
-    password_confirmation: "",
+    user_id: 0,
+    first_name: "Loading...",
+    second_name: "Loading...",
+    email_address: "Loading...",
+    new_password: "",
+    new_password_confirmation: "",
     role: "",
+    active: 0,
     roleOnShow: {
       display_name: "",
       permissions: [],
@@ -81,11 +90,25 @@ class View extends Component {
       [e.target.name]: e.target.value
     });
     if (e.target.name === "role") {
-      this.setState({
-        roleOnShow: this.state.downloadedRoles.find(
+      if (
+        this.state.downloadedRoles.findIndex(
           role => role.id === e.target.value
-        )
-      });
+        ) !== -1
+      ) {
+        this.setState({
+          roleOnShow: this.state.downloadedRoles.find(
+            role => role.id === e.target.value
+          )
+        });
+      } else {
+        this.setState({
+          roleOnShow: {
+            display_name: "",
+            permissions: [],
+            protected_role: 0
+          }
+        });
+      }
     }
   };
 
@@ -111,20 +134,99 @@ class View extends Component {
 
   componentDidMount() {
     this.populateRoles();
+    this.downloadUser();
   }
 
-  createUser = e => {
+  downloadUser() {
+    let getUserEndpoint =
+      APIEndpoints.get("getSingleUser", this.company_subdir) + this.user_id;
+    let headers = {
+      headers: {
+        Authorization: "Bearer " + Cookies.get("token")
+      }
+    };
+    axios
+      .get(getUserEndpoint, headers)
+      .then(res => {
+        if (res.data.user) {
+          let user = res.data.user;
+          this.setState({
+            user_id: user.id,
+            first_name: user.first_name,
+            second_name: user.second_name,
+            email_address: user.email_address,
+            role: user.role_id,
+            active: user.active
+          });
+        }
+      })
+      .catch(error => {
+        if (error.response) {
+          if (error.response.status === 422) {
+            var newErrorsState = { ...this.state.errors };
+            let errorData = error.response.data;
+            if (errorData.first_name)
+              newErrorsState.first_name = errorData.first_name;
+            if (errorData.second_name)
+              newErrorsState.second_name = errorData.second_name;
+            if (errorData.email_address)
+              newErrorsState.email_address = errorData.email_address;
+            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
+            if (errorData.password)
+              newErrorsState.password = errorData.password;
+            this.setState({
+              errors: newErrorsState
+            });
+          }
+        }
+      });
+  }
+
+  toggleActive = () => {
+    let headers = {
+      headers: {
+        Authorization: "Bearer " + Cookies.get("token")
+      }
+    };
+    let toggleActiveUserEndpoint = APIEndpoints.get(
+      "toggleActiveUser",
+      this.company_subdir
+    );
+    let data = {
+      user_id: this.state.user_id
+    };
+    axios
+      .post(toggleActiveUserEndpoint, data, headers)
+      .then(res => {
+        if (res.status === 204) {
+          let newActiveState = !this.state.active;
+          this.setState({
+            active: newActiveState,
+            messages: [
+              {
+                text: "User active toggled",
+                severity: "success"
+              }
+            ]
+          });
+        }
+      })
+      .catch(error => console.log(error.response));
+  };
+
+  updateUser = e => {
     e.preventDefault();
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let createUserEndpoint = APIEndpoints.get(
-      "createUser",
+    let updateUserEndpoint = APIEndpoints.get(
+      "updateUser",
       this.company_subdir
     );
     let data = {
+      user_id: this.state.user_id,
       first_name: this.state.first_name,
       second_name: this.state.second_name,
       email_address: this.state.email_address,
@@ -133,20 +235,14 @@ class View extends Component {
       password_confirmation: this.state.password_confirmation
     };
     axios
-      .post(createUserEndpoint, data, headers)
+      .post(updateUserEndpoint, data, headers)
       .then(res => {
         var severity = "info";
-        if (res.status === 201) severity = "success";
+        if (res.status === 204) severity = "success";
         this.setState({
-          first_name: "",
-          second_name: "",
-          email_address: "",
-          password: "",
-          password_confirmation: "",
-          role: "",
           messages: [
             {
-              text: res.statusText,
+              text: "User Updated",
               severity: severity
             }
           ]
@@ -197,14 +293,20 @@ class View extends Component {
             >
               Users
             </MuiLink>
-            <Typography color="textPrimary">Create User</Typography>
+            <Typography color="textPrimary">{this.state.first_name}</Typography>
           </Breadcrumbs>
           <Typography
             component="h1"
             variant="h4"
             className="standard-margin-bottom"
           >
-            Create User
+            {this.state.first_name}&nbsp;
+            {this.state.second_name}&nbsp;
+            {this.state.active ? (
+              <CheckCircleIcon style={{ color: "#2ecc71" }} />
+            ) : (
+              <ErrorIcon style={{ color: "#e74c3c" }} />
+            )}
           </Typography>
           <Divider className="standard-margin-bottom" />
           {this.state.messages.map((message, index) => (
@@ -228,7 +330,10 @@ class View extends Component {
               flexDirection="column"
               className="xs-full-width md-half-width standard-margin-bottom"
             >
-              <form className="xs-full-width" onSubmit={this.createUser}>
+              <form
+                className="xs-full-width standard-margin-bottom"
+                onSubmit={this.updateUser}
+              >
                 <Typography component="h3" variant="h5">
                   User Details
                 </Typography>
@@ -309,22 +414,20 @@ class View extends Component {
                 <TextField
                   name="password"
                   type="password"
-                  label="Password"
+                  label="New Password"
                   onChange={this.onChange}
                   value={this.state.password}
                   className="xs-full-width standard-margin-bottom"
                   error={this.state.errors.password.length > 0 ? true : false}
-                  required
                 />
                 <TextField
                   name="password_confirmation"
                   type="password"
-                  label="Password Confirmation"
+                  label="New Password Confirmation"
                   onChange={this.onChange}
                   value={this.state.password_confirmation}
                   className="xs-full-width standard-margin-bottom"
                   error={this.state.errors.password.length > 0 ? true : false}
-                  required
                 />
                 <Select
                   name="role"
@@ -351,28 +454,63 @@ class View extends Component {
                   variant="contained"
                   color="primary"
                 >
-                  Create User
+                  Update {this.state.first_name}
                 </Button>
               </form>
+              <Button
+                className="standard-margin-bottom"
+                onClick={this.toggleActive}
+                type="button"
+                variant="contained"
+                color="secondary"
+              >
+                Toggle Active
+              </Button>
+              <Button
+                component={Link}
+                variant="contained"
+                color="default"
+                to={
+                  "/" +
+                  this.company_subdir +
+                  "/users/" +
+                  this.state.user_id +
+                  "/action-logs"
+                }
+              >
+                View Action Logs
+              </Button>
             </Box>
             <Box
               display="flex"
               flexDirection="column"
               className="xs-full-width md-half-width standard-margin-bottom"
             >
-              <Typography component="h3" variant="h5">
-                Applied Permissions
-              </Typography>
-              <Typography component="p">
-                You can't assign seperate permissions to users, only roles.
-              </Typography>
-              <List>
-                {this.state.roleOnShow.permissions.map(permission => (
-                  <ListItem key={permission.permission_action.action}>
-                    <ListItemText primary={permission.permission_action.name} />
-                  </ListItem>
-                ))}
-              </List>
+              <ExpansionPanel>
+                <ExpansionPanelSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="applied-permissions-panel-content"
+                  id="panel1a-header"
+                >
+                  <Typography component="h4" variant="h6">
+                    Applied Permissions
+                  </Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails style={{ display: "block" }}>
+                  <List>
+                    {this.state.roleOnShow.permissions.map(permission => (
+                      <ListItem
+                        disableGutters
+                        key={permission.permission_action.action}
+                      >
+                        <ListItemText
+                          primary={permission.permission_action.name}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
             </Box>
           </Box>
         </Container>
