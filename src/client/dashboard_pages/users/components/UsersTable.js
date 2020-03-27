@@ -18,8 +18,10 @@ import {
 } from "@material-ui/core";
 
 class UsersTable extends Component {
-  company_subdir = this.props.company_subdir;
-  getAllUsersEndpoint = APIEndpoints.get("getAllUsers", this.company_subdir);
+  getAllUsersEndpoint = APIEndpoints.get(
+    "getAllUsers",
+    this.props.company_subdir
+  );
 
   state = {
     users: {}
@@ -42,6 +44,7 @@ class UsersTable extends Component {
   }
 
   render() {
+    const { company_subdir } = { ...this.props };
     return (
       <TableContainer component={Paper}>
         <Table aria-label="table containing the users">
@@ -78,7 +81,7 @@ class UsersTable extends Component {
                       component={Link}
                       variant="contained"
                       color="primary"
-                      to={"/" + this.company_subdir + "/users/" + user.id}
+                      to={"/" + company_subdir + "/users/" + user.id}
                     >
                       View
                     </Button>

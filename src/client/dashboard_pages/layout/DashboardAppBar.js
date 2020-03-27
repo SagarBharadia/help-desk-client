@@ -15,7 +15,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { Link } from "react-router-dom";
 
 class DashboardAppBar extends Component {
-  baselink = "/" + this.props.match.params.company_subdir;
+  baselink = "/" + this.props.company_subdir;
   state = {
     drawerOpen: false
   };
@@ -29,7 +29,7 @@ class DashboardAppBar extends Component {
   ];
 
   toggleDrawer = () => {
-    let drawerState = !this.state.drawerOpen;
+    const drawerState = !this.state.drawerOpen;
     this.setState({
       drawerOpen: drawerState
     });
@@ -81,7 +81,7 @@ class DashboardAppBar extends Component {
               color="inherit"
               style={{ flex: 1 }}
             >
-              {this.props.match.params.company_subdir}
+              {this.props.company_subdir}
             </Typography>
             <Typography variant="h6" component="span" color="inherit">
               John Doe
