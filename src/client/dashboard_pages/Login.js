@@ -6,7 +6,6 @@ import APIEndpoints from "../APIEndpoints";
 
 class Login extends Component {
   company_subdir = this.props.match.params.company_subdir;
-  loginEndpoint = APIEndpoints.get("login", this.company_subdir);
   loginRedirectIfSuccessful = `/${this.company_subdir}/dashboard`;
 
   state = {
@@ -27,9 +26,13 @@ class Login extends Component {
   onSubmit = e => {
     // Preventing default behaviour of submit
     e.preventDefault();
+    // Getting login endpoint
+    const loginEndpoint = APIEndpoints.get("login", {
+      company_subdir: this.company_subdir
+    });
     // Performing post request
     axios
-      .post(this.loginEndpoint, {
+      .post(loginEndpoint, {
         email_address: this.state.email_address,
         password: this.state.password
       })

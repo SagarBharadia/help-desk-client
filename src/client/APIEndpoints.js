@@ -36,7 +36,10 @@ const APIEndpoints = {
       throw new Error("Data is a non-object when object is required.");
     if (typeof data.company_subdir === "undefined")
       throw new Error("company_subdir was not defined in data.");
-    generatePath(AppConfig.API_URL + this.endpoints[endpointName], data);
+    console.log(
+      AppConfig.API_URL + generatePath(this.endpoints[endpointName], data)
+    );
+    return AppConfig.API_URL + generatePath(this.endpoints[endpointName], data);
   }
 };
 

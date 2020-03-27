@@ -72,8 +72,10 @@ class View extends Component {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let getSingleRoleEndpoint =
-      APIEndpoints.get("getSingleRole", this.company_subdir) + this.state.role;
+    let getSingleRoleEndpoint = APIEndpoints.get("getSingleRole", {
+      company_subdir: this.company_subdir,
+      id: this.state.role
+    });
     axios
       .get(getSingleRoleEndpoint, options)
       .then(res => {
@@ -120,7 +122,9 @@ class View extends Component {
         forForm: "true"
       }
     };
-    let getRolesEndpoint = APIEndpoints.get("getAllRoles", this.company_subdir);
+    let getRolesEndpoint = APIEndpoints.get("getAllRoles", {
+      company_subdir: this.company_subdir
+    });
     axios
       .get(getRolesEndpoint, options)
       .then(res => {
@@ -137,8 +141,10 @@ class View extends Component {
   }
 
   downloadUser() {
-    let getUserEndpoint =
-      APIEndpoints.get("getSingleUser", this.company_subdir) + this.user_id;
+    let getUserEndpoint = APIEndpoints.get("getSingleUser", {
+      company_subdir: this.company_subdir,
+      id: this.user_id
+    });
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token")
@@ -187,10 +193,9 @@ class View extends Component {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let toggleActiveUserEndpoint = APIEndpoints.get(
-      "toggleActiveUser",
-      this.company_subdir
-    );
+    let toggleActiveUserEndpoint = APIEndpoints.get("toggleActiveUser", {
+      company_subdir: this.company_subdir
+    });
     let data = {
       user_id: this.state.user_id
     };
@@ -220,10 +225,9 @@ class View extends Component {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let updateUserEndpoint = APIEndpoints.get(
-      "updateUser",
-      this.company_subdir
-    );
+    let updateUserEndpoint = APIEndpoints.get("updateUser", {
+      company_subdir: this.company_subdir
+    });
     let data = {
       user_id: this.state.user_id,
       first_name: this.state.first_name,

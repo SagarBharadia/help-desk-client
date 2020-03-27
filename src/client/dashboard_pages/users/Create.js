@@ -62,8 +62,10 @@ class Create extends Component {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let getSingleRoleEndpoint =
-      APIEndpoints.get("getSingleRole", this.company_subdir) + this.state.role;
+    let getSingleRoleEndpoint = APIEndpoints.get("getSingleRole", {
+      company_subdir: this.company_subdir,
+      id: this.state.role
+    });
     axios
       .get(getSingleRoleEndpoint, options)
       .then(res => {
@@ -96,7 +98,9 @@ class Create extends Component {
         forForm: "true"
       }
     };
-    let getRolesEndpoint = APIEndpoints.get("getAllRoles", this.company_subdir);
+    let getRolesEndpoint = APIEndpoints.get("getAllRoles", {
+      company_subdir: this.company_subdir
+    });
     axios
       .get(getRolesEndpoint, options)
       .then(res => {
@@ -118,10 +122,9 @@ class Create extends Component {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
-    let createUserEndpoint = APIEndpoints.get(
-      "createUser",
-      this.company_subdir
-    );
+    let createUserEndpoint = APIEndpoints.get("createUser", {
+      company_subdir: this.company_subdir
+    });
     let data = {
       first_name: this.state.first_name,
       second_name: this.state.second_name,

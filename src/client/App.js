@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 import "../css/normalize.css";
 import "../css/index.css";
-import AppConfig from "./AppConfig";
+import APIEndpoints from "./APIEndpoints";
 import Axios from "axios";
 
 class App extends Component {
@@ -23,10 +23,9 @@ class App extends Component {
       Cookies.get("token-type") &&
       Cookies.get("auth-company-subdir")
     ) {
-      const checkTokenEndpoint =
-        AppConfig.API_URL +
-        Cookies.get("auth-company-subdir") +
-        "/api/check-token";
+      const checkTokenEndpoint = APIEndpoints.get("checkToken", {
+        company_subdir: Cookies.get("auth-company-subdir")
+      });
       const options = {
         headers: {
           Authorization: "Bearer " + Cookies.get("token")

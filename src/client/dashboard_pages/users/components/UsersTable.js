@@ -18,23 +18,22 @@ import {
 } from "@material-ui/core";
 
 class UsersTable extends Component {
-  getAllUsersEndpoint = APIEndpoints.get(
-    "getAllUsers",
-    this.props.company_subdir
-  );
-
+  company_subdir = this.props.company_subdir;
   state = {
     users: {}
   };
 
   componentDidMount() {
+    const getAllUsersEndpoint = APIEndpoints.get("getAllUsers", {
+      company_subdir: this.company_subdir
+    });
     const options = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token")
       }
     };
     axios
-      .get(this.getAllUsersEndpoint, options)
+      .get(getAllUsersEndpoint, options)
       .then(res => res.data)
       .then(data => {
         this.setState({
