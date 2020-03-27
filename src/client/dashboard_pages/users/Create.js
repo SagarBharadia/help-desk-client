@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import DashboardAppBar from "../layout/DashboardAppBar";
+import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import {
   Box,
   Breadcrumbs,
-  Container,
   Link as MuiLink,
   Typography,
   TextField,
@@ -175,9 +174,8 @@ class Create extends Component {
 
   render() {
     return (
-      <Box>
-        <DashboardAppBar {...this.props} />
-        <Container>
+      <DashboardWrapper {...this.props}>
+        <main>
           <Breadcrumbs
             aria-label="breadcrumb"
             className="standard-margin-bottom"
@@ -377,8 +375,8 @@ class Create extends Component {
               </List>
             </Box>
           </Box>
-        </Container>
-      </Box>
+        </main>
+      </DashboardWrapper>
     );
   }
 }

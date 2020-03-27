@@ -5,7 +5,7 @@ class Dashboard extends Component {
   render() {
     return (
       <DashboardWrapper {...this.props}>
-        <h1>Children test</h1>
+        <main></main>
       </DashboardWrapper>
     );
   }

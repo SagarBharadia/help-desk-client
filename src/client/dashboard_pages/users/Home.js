@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import UsersTable from "./components/UsersTable";
 import {
   Typography,
-  Container,
   Breadcrumbs,
   Link as MuiLink,
   Box,
@@ -19,41 +18,39 @@ class Home extends Component {
     return (
       <DashboardWrapper {...this.props}>
         <main>
-          <Container>
-            <Breadcrumbs
-              aria-label="breadcrumb"
-              className="standard-margin-bottom"
+          <Breadcrumbs
+            aria-label="breadcrumb"
+            className="standard-margin-bottom"
+          >
+            <MuiLink
+              component={Link}
+              to={"/" + company_subdir + "/dashboard"}
+              color="inherit"
             >
-              <MuiLink
-                component={Link}
-                to={"/" + company_subdir + "/dashboard"}
-                color="inherit"
-              >
-                Home
-              </MuiLink>
-              <Typography color="textPrimary">Users</Typography>
-            </Breadcrumbs>
-            <Box
-              display="flex"
-              flexDirection="row"
-              flexWrap="wrap"
-              className="standard-margin-bottom"
+              Home
+            </MuiLink>
+            <Typography color="textPrimary">Users</Typography>
+          </Breadcrumbs>
+          <Box
+            display="flex"
+            flexDirection="row"
+            flexWrap="wrap"
+            className="standard-margin-bottom"
+          >
+            <Typography component="h1" variant="h4">
+              Users
+            </Typography>
+            <Button
+              component={Link}
+              variant="contained"
+              color="primary"
+              style={{ marginLeft: "20px" }}
+              to={"/" + company_subdir + "/users/create"}
             >
-              <Typography component="h1" variant="h4">
-                Users
-              </Typography>
-              <Button
-                component={Link}
-                variant="contained"
-                color="primary"
-                style={{ marginLeft: "20px" }}
-                to={"/" + company_subdir + "/users/create"}
-              >
-                Create User
-              </Button>
-            </Box>
-            <UsersTable company_subdir={company_subdir} />
-          </Container>
+              Create User
+            </Button>
+          </Box>
+          <UsersTable company_subdir={company_subdir} />
         </main>
       </DashboardWrapper>
     );

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import DashboardAppBar from "./DashboardAppBar";
 import { Box } from "@material-ui/core";
 import PropTypes from "prop-types";
+import { Container } from "@material-ui/core";
 
 class DashboardWrapper extends Component {
   render() {
@@ -10,7 +11,7 @@ class DashboardWrapper extends Component {
     return (
       <Box>
         <DashboardAppBar company_subdir={company_subdir} location={location} />
-        {this.props.children}
+        <Container>{this.props.children}</Container>
       </Box>
     );
   }

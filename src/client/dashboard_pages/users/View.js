@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import DashboardAppBar from "../layout/DashboardAppBar";
+import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -12,7 +12,6 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import {
   Box,
   Breadcrumbs,
-  Container,
   Link as MuiLink,
   Typography,
   TextField,
@@ -272,9 +271,8 @@ class View extends Component {
 
   render() {
     return (
-      <Box>
-        <DashboardAppBar {...this.props} />
-        <Container>
+      <DashboardWrapper {...this.props}>
+        <main>
           <Breadcrumbs
             aria-label="breadcrumb"
             className="standard-margin-bottom"
@@ -513,8 +511,8 @@ class View extends Component {
               </ExpansionPanel>
             </Box>
           </Box>
-        </Container>
-      </Box>
+        </main>
+      </DashboardWrapper>
     );
   }
 }
