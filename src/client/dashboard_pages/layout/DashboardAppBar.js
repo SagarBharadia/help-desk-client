@@ -35,6 +35,12 @@ class DashboardAppBar extends Component {
         company_subdir: this.company_subdir,
       }),
     },
+    {
+      name: "Roles",
+      link: Endpoints.get("client", "rolesArea", {
+        company_subdir: this.company_subdir,
+      }),
+    },
     { name: "Clients", link: "/clients" },
     { name: "Calls", link: "/calls" },
     { name: "Reports", link: "/reports" },
