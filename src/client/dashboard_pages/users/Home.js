@@ -7,8 +7,10 @@ import {
   Breadcrumbs,
   Link as MuiLink,
   Box,
-  Button
+  Button,
 } from "@material-ui/core";
+
+import Endpoints from "../../Endpoints";
 
 import DashboardWrapper from "../layout/DashboardWrapper";
 
@@ -24,7 +26,9 @@ class Home extends Component {
           >
             <MuiLink
               component={Link}
-              to={"/" + company_subdir + "/dashboard"}
+              to={Endpoints.get("client", "dashboard", {
+                company_subdir: company_subdir,
+              })}
               color="inherit"
             >
               Home
@@ -45,7 +49,9 @@ class Home extends Component {
               variant="contained"
               color="primary"
               style={{ marginLeft: "20px" }}
-              to={"/" + company_subdir + "/users/create"}
+              to={Endpoints.get("client", "createUser", {
+                company_subdir: company_subdir,
+              })}
             >
               Create User
             </Button>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import APIEndpoints from "../../../APIEndpoints";
+import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import Cookies from "js-cookie";
 import ErrorIcon from "@material-ui/icons/Error";
@@ -14,30 +14,30 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button
+  Button,
 } from "@material-ui/core";
 
 class UsersTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
-    users: {}
+    users: {},
   };
 
   componentDidMount() {
-    const getAllUsersEndpoint = APIEndpoints.get("getAllUsers", {
-      company_subdir: this.company_subdir
+    const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
+      company_subdir: this.company_subdir,
     });
     const options = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
-      }
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
     };
     axios
       .get(getAllUsersEndpoint, options)
-      .then(res => res.data)
-      .then(data => {
+      .then((res) => res.data)
+      .then((data) => {
         this.setState({
-          users: data.data
+          users: data.data,
         });
       });
   }
@@ -57,7 +57,7 @@ class UsersTable extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(this.state.users).map(key => {
+            {Object.keys(this.state.users).map((key) => {
               let user = this.state.users[key];
               return (
                 <TableRow key={user.id}>
@@ -80,7 +80,10 @@ class UsersTable extends Component {
                       component={Link}
                       variant="contained"
                       color="primary"
-                      to={"/" + company_subdir + "/users/" + user.id}
+                      to={Endpoints.get("client", "viewUser", {
+                        company_subdir: company_subdir,
+                        id: user.id,
+                      })}
                     >
                       View
                     </Button>

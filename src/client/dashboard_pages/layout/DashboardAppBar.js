@@ -8,30 +8,42 @@ import {
   Drawer,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 
 import { Link } from "react-router-dom";
 
+import Endpoints from "../../Endpoints";
+
 class DashboardAppBar extends Component {
-  baselink = "/" + this.props.company_subdir;
+  company_subdir = this.props.company_subdir;
   state = {
-    drawerOpen: false
+    drawerOpen: false,
   };
 
   drawerNavListItems = [
-    { name: "Home", link: this.baselink + "/dashboard" },
-    { name: "Users", link: this.baselink + "/users" },
-    { name: "Clients", link: this.baselink + "/clients" },
-    { name: "Calls", link: this.baselink + "/calls" },
-    { name: "Reports", link: this.baselink + "/reports" }
+    {
+      name: "Home",
+      link: Endpoints.get("client", "dashboard", {
+        company_subdir: this.company_subdir,
+      }),
+    },
+    {
+      name: "Users",
+      link: Endpoints.get("client", "usersArea", {
+        company_subdir: this.company_subdir,
+      }),
+    },
+    { name: "Clients", link: "/clients" },
+    { name: "Calls", link: "/calls" },
+    { name: "Reports", link: "/reports" },
   ];
 
   toggleDrawer = () => {
     const drawerState = !this.state.drawerOpen;
     this.setState({
-      drawerOpen: drawerState
+      drawerOpen: drawerState,
     });
   };
 
@@ -44,7 +56,7 @@ class DashboardAppBar extends Component {
         onKeyDown={this.toggleDrawer}
       >
         <List>
-          {this.drawerNavListItems.map(item => (
+          {this.drawerNavListItems.map((item) => (
             <ListItem
               selected={
                 this.props.location.pathname === item.link ? true : false

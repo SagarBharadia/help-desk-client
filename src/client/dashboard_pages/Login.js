@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Redirect } from "react-router-dom";
-import APIEndpoints from "../APIEndpoints";
+import Endpoints from "../Endpoints";
 
 class Login extends Component {
   company_subdir = this.props.match.params.company_subdir;
@@ -13,65 +13,68 @@ class Login extends Component {
     password: "",
     response: {
       status: null,
-      statusText: ""
-    }
+      statusText: "",
+    },
   };
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     // Preventing default behaviour of submit
     e.preventDefault();
     // Getting login endpoint
-    const loginEndpoint = APIEndpoints.get("login", {
-      company_subdir: this.company_subdir
+    const loginEndpoint = Endpoints.get("api", "login", {
+      company_subdir: this.company_subdir,
     });
     // Performing post request
     axios
       .post(loginEndpoint, {
         email_address: this.state.email_address,
-        password: this.state.password
+        password: this.state.password,
       })
-      .then(res => {
+      .then((res) => {
         Cookies.set("token-type", res.data.token_type, {
-          expires: res.data.expires_in / 1440
+          expires: res.data.expires_in / 1440,
         });
         Cookies.set("token", res.data.token, {
-          expires: res.data.expires_in / 1440
+          expires: res.data.expires_in / 1440,
         });
         Cookies.set("auth-company-subdir", res.data.company_subdir, {
-          expires: res.data.expires_in / 1440
+          expires: res.data.expires_in / 1440,
         });
         this.setState({
           response: {
             status: res.status,
-            statusText: res.statusText
-          }
+            statusText: res.statusText,
+          },
         });
         this.props.setAppState("authenticated", true);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
           this.setState({
             response: {
               status: error.response.status,
-              statusText: error.response.statusText
-            }
+              statusText: error.response.statusText,
+            },
           });
         }
       });
 
     this.setState({
       email_address: "",
-      password: ""
+      password: "",
     });
   };
 
   render() {
+    const loginRedirectIfSuccessful = Endpoints.get("client", "dashboard", {
+      company_subdir: this.company_subdir,
+    });
     return (
       <div>
         <div>
@@ -101,7 +104,7 @@ class Login extends Component {
           <button type="submit">Login</button>
         </form>
         {this.props.authenticated ? (
-          <Redirect to={this.loginRedirectIfSuccessful} />
+          <Redirect to={loginRedirectIfSuccessful} />
         ) : null}
       </div>
     );

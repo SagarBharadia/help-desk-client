@@ -3,7 +3,7 @@ import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-import APIEndpoints from "../../APIEndpoints";
+import Endpoints from "../../Endpoints";
 
 import { Link } from "react-router-dom";
 import ErrorIcon from "@material-ui/icons/Error";
@@ -24,7 +24,7 @@ import {
   ListItemText,
   ExpansionPanelSummary,
   ExpansionPanel,
-  ExpansionPanelDetails
+  ExpansionPanelDetails,
 } from "@material-ui/core";
 
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -47,7 +47,7 @@ class View extends Component {
     roleOnShow: {
       display_name: "",
       permissions: [],
-      protected_role: 0
+      protected_role: 0,
     },
     errors: {
       first_name: [],
@@ -55,59 +55,59 @@ class View extends Component {
       email_address: [],
       role_id: [],
       password: [],
-      password_confirmation: []
+      password_confirmation: [],
     },
-    messages: []
+    messages: [],
   };
 
   styles = {
     textfield: {
-      width: "calc(33% - 20px)"
-    }
+      width: "calc(33% - 20px)",
+    },
   };
 
   displayRole() {
     let options = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
-      }
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
     };
-    let getSingleRoleEndpoint = APIEndpoints.get("getSingleRole", {
+    let getSingleRoleEndpoint = Endpoints.get("api", "getSingleRole", {
       company_subdir: this.company_subdir,
-      id: this.state.role
+      id: this.state.role,
     });
     axios
       .get(getSingleRoleEndpoint, options)
-      .then(res => {
+      .then((res) => {
         if (res.data.role) this.setState({ roleOnShow: res.data.role });
       })
-      .catch(reason => {
+      .catch((reason) => {
         console.log(reason);
       });
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     if (e.target.name === "role") {
       if (
         this.state.downloadedRoles.findIndex(
-          role => role.id === e.target.value
+          (role) => role.id === e.target.value
         ) !== -1
       ) {
         this.setState({
           roleOnShow: this.state.downloadedRoles.find(
-            role => role.id === e.target.value
-          )
+            (role) => role.id === e.target.value
+          ),
         });
       } else {
         this.setState({
           roleOnShow: {
             display_name: "",
             permissions: [],
-            protected_role: 0
-          }
+            protected_role: 0,
+          },
         });
       }
     }
@@ -116,21 +116,21 @@ class View extends Component {
   populateRoles() {
     let options = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
+        Authorization: "Bearer " + Cookies.get("token"),
       },
       params: {
-        forForm: "true"
-      }
+        forForm: "true",
+      },
     };
-    let getRolesEndpoint = APIEndpoints.get("getAllRoles", {
-      company_subdir: this.company_subdir
+    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+      company_subdir: this.company_subdir,
     });
     axios
       .get(getRolesEndpoint, options)
-      .then(res => {
+      .then((res) => {
         this.setState({ downloadedRoles: res.data });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
@@ -141,18 +141,18 @@ class View extends Component {
   }
 
   downloadUser() {
-    let getUserEndpoint = APIEndpoints.get("getSingleUser", {
+    let getUserEndpoint = Endpoints.get("api", "getSingleUser", {
       company_subdir: this.company_subdir,
-      id: this.user_id
+      id: this.user_id,
     });
     let headers = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
-      }
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
     };
     axios
       .get(getUserEndpoint, headers)
-      .then(res => {
+      .then((res) => {
         if (res.data.user) {
           let user = res.data.user;
           this.setState({
@@ -161,11 +161,11 @@ class View extends Component {
             second_name: user.second_name,
             email_address: user.email_address,
             role: user.role_id,
-            active: user.active
+            active: user.active,
           });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
@@ -180,7 +180,7 @@ class View extends Component {
             if (errorData.password)
               newErrorsState.password = errorData.password;
             this.setState({
-              errors: newErrorsState
+              errors: newErrorsState,
             });
           }
         }
@@ -190,18 +190,18 @@ class View extends Component {
   toggleActive = () => {
     let headers = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
-      }
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
     };
-    let toggleActiveUserEndpoint = APIEndpoints.get("toggleActiveUser", {
-      company_subdir: this.company_subdir
+    let toggleActiveUserEndpoint = Endpoints.get("api", "toggleActiveUser", {
+      company_subdir: this.company_subdir,
     });
     let data = {
-      user_id: this.state.user_id
+      user_id: this.state.user_id,
     };
     axios
       .post(toggleActiveUserEndpoint, data, headers)
-      .then(res => {
+      .then((res) => {
         if (res.status === 204) {
           let newActiveState = !this.state.active;
           this.setState({
@@ -209,24 +209,24 @@ class View extends Component {
             messages: [
               {
                 text: "User active toggled",
-                severity: "success"
-              }
-            ]
+                severity: "success",
+              },
+            ],
           });
         }
       })
-      .catch(error => console.log(error.response));
+      .catch((error) => console.log(error.response));
   };
 
-  updateUser = e => {
+  updateUser = (e) => {
     e.preventDefault();
     let headers = {
       headers: {
-        Authorization: "Bearer " + Cookies.get("token")
-      }
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
     };
-    let updateUserEndpoint = APIEndpoints.get("updateUser", {
-      company_subdir: this.company_subdir
+    let updateUserEndpoint = Endpoints.get("api", "updateUser", {
+      company_subdir: this.company_subdir,
     });
     let data = {
       user_id: this.state.user_id,
@@ -235,23 +235,23 @@ class View extends Component {
       email_address: this.state.email_address,
       role_id: this.state.role,
       password: this.state.password,
-      password_confirmation: this.state.password_confirmation
+      password_confirmation: this.state.password_confirmation,
     };
     axios
       .post(updateUserEndpoint, data, headers)
-      .then(res => {
+      .then((res) => {
         var severity = "info";
         if (res.status === 204) severity = "success";
         this.setState({
           messages: [
             {
               text: "User Updated",
-              severity: severity
-            }
-          ]
+              severity: severity,
+            },
+          ],
         });
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
@@ -266,7 +266,7 @@ class View extends Component {
             if (errorData.password)
               newErrorsState.password = errorData.password;
             this.setState({
-              errors: newErrorsState
+              errors: newErrorsState,
             });
           }
         }
@@ -441,7 +441,7 @@ class View extends Component {
                 >
                   <MenuItem value="">Select Role</MenuItem>
                   <Divider />
-                  {Object.keys(this.state.downloadedRoles).map(key => {
+                  {Object.keys(this.state.downloadedRoles).map((key) => {
                     let role = this.state.downloadedRoles[key];
                     return (
                       <MenuItem key={role.name} value={role.id}>
@@ -500,7 +500,7 @@ class View extends Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails style={{ display: "block" }}>
                   <List>
-                    {this.state.roleOnShow.permissions.map(permission => (
+                    {this.state.roleOnShow.permissions.map((permission) => (
                       <ListItem
                         disableGutters
                         key={permission.permission_action.action}

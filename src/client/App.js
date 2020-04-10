@@ -4,13 +4,13 @@ import Cookies from "js-cookie";
 
 import "../css/normalize.css";
 import "../css/index.css";
-import APIEndpoints from "./APIEndpoints";
+import Endpoints from "./Endpoints";
 import Axios from "axios";
 
 class App extends Component {
   state = {
     authenticated: false,
-    loaded: false
+    loaded: false,
   };
 
   setAppState = (key, value) => {
@@ -23,21 +23,21 @@ class App extends Component {
       Cookies.get("token-type") &&
       Cookies.get("auth-company-subdir")
     ) {
-      const checkTokenEndpoint = APIEndpoints.get("checkToken", {
-        company_subdir: Cookies.get("auth-company-subdir")
+      const checkTokenEndpoint = Endpoints.get("api", "checkToken", {
+        company_subdir: Cookies.get("auth-company-subdir"),
       });
       const options = {
         headers: {
-          Authorization: "Bearer " + Cookies.get("token")
-        }
+          Authorization: "Bearer " + Cookies.get("token"),
+        },
       };
       Axios.get(checkTokenEndpoint, options)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             this.setState({ authenticated: true, loaded: true });
           }
         })
-        .catch(error => {
+        .catch((error) => {
           Cookies.remove("token");
           Cookies.remove("token-type");
           Cookies.remove("auth-company-subdir");
