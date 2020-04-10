@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import Cookies from "js-cookie";
-import ErrorIcon from "@material-ui/icons/Error";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Table,
@@ -17,29 +15,29 @@ import {
   Button,
 } from "@material-ui/core";
 
-class UsersTable extends Component {
+class RolesTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
-    users: {},
+    roles: {},
   };
 
   componentDidMount() {
-    const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
-      company_subdir: this.company_subdir,
-    });
-    const options = {
+    let options = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
+      params: {
+        forForm: "true",
+      },
     };
-    axios
-      .get(getAllUsersEndpoint, options)
-      .then((res) => res.data)
-      .then((data) => {
-        this.setState({
-          users: data.data,
-        });
+    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+      company_subdir: this.company_subdir,
+    });
+    axios.get(getRolesEndpoint, options).then((res) => {
+      this.setState({
+        roles: res.data,
       });
+    });
   }
 
   render() {
@@ -51,38 +49,28 @@ class UsersTable extends Component {
             <TableRow>
               <TableCell>#</TableCell>
               <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Email Address</TableCell>
-              <TableCell align="right">Active</TableCell>
+              <TableCell align="right">Display Name</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(this.state.users).map((key) => {
-              let user = this.state.users[key];
+            {Object.keys(this.state.roles).map((key) => {
+              let role = this.state.roles[key];
               return (
-                <TableRow key={user.id}>
+                <TableRow key={role.id}>
                   <TableCell component="th" scope="row">
-                    {user.id}
+                    {role.id}
                   </TableCell>
-                  <TableCell align="right">
-                    {user.first_name + " " + user.second_name}
-                  </TableCell>
-                  <TableCell align="right">{user.email_address}</TableCell>
-                  <TableCell align="right">
-                    {user.active === 1 ? (
-                      <CheckCircleIcon style={{ color: "#2ecc71" }} />
-                    ) : (
-                      <ErrorIcon style={{ color: "#e74c3c" }} />
-                    )}
-                  </TableCell>
+                  <TableCell align="right">{role.name}</TableCell>
+                  <TableCell align="right">{role.display_name}</TableCell>
                   <TableCell align="right">
                     <Button
                       component={Link}
                       variant="contained"
                       color="primary"
-                      to={Endpoints.get("client", "viewUser", {
+                      to={Endpoints.get("client", "viewRole", {
                         company_subdir: company_subdir,
-                        id: user.id,
+                        id: role.id,
                       })}
                     >
                       View
@@ -98,4 +86,4 @@ class UsersTable extends Component {
   }
 }
 
-export default UsersTable;
+export default RolesTable;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
-// import UsersTable from "./components/UsersTable";
+import RolesTable from "./components/RolesTable";
 import {
   Typography,
   Breadcrumbs,
@@ -56,7 +56,7 @@ class Home extends Component {
               Create Role
             </Button>
           </Box>
-          {/* <UsersTable company_subdir={company_subdir} /> */}
+          <RolesTable company_subdir={company_subdir} />
         </main>
       </DashboardWrapper>
     );
