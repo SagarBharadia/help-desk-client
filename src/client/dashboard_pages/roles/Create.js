@@ -14,12 +14,10 @@ import {
   Typography,
   TextField,
   Divider,
-  Select,
-  MenuItem,
   Button,
-  List,
-  ListItem,
-  ListItemText,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 
 import { Alert } from "@material-ui/lab";
@@ -27,124 +25,70 @@ import { Alert } from "@material-ui/lab";
 class Create extends Component {
   company_subdir = this.props.match.params.company_subdir;
   state = {
-    downloadedRoles: [],
-    first_name: "",
-    second_name: "",
-    email_address: "",
-    password: "",
-    password_confirmation: "",
-    role: "",
-    roleOnShow: {
-      display_name: "",
-      permissions: [],
-      protected_role: 0,
-    },
+    name: "",
+    display_name: "",
+    appliedPermissions: [],
+    availablePermissionActions: [],
     errors: {
-      first_name: [],
-      second_name: [],
-      email_address: [],
-      role_id: [],
-      password: [],
-      password_confirmation: [],
+      name: [],
+      display_name: [],
     },
     messages: [],
   };
-
-  styles = {
-    textfield: {
-      width: "calc(33% - 20px)",
-    },
-  };
-
-  displayRole() {
-    let options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
-    let getSingleRoleEndpoint = Endpoints.get("api", "getSingleRole", {
-      company_subdir: this.company_subdir,
-      id: this.state.role,
-    });
-    axios
-      .get(getSingleRoleEndpoint, options)
-      .then((res) => {
-        if (res.data.role) this.setState({ roleOnShow: res.data.role });
-      })
-      .catch((reason) => {
-        console.log(reason);
-      });
-  }
 
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (e.target.name === "role") {
-      this.setState({
-        roleOnShow: this.state.downloadedRoles.find(
-          (role) => role.id === e.target.value
-        ),
-      });
-    }
   };
 
-  populateRoles() {
-    let options = {
+  componentDidMount() {
+    this.getAllPermissionActions();
+  }
+
+  getAllPermissionActions() {
+    let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
-      params: {
-        forForm: "true",
-      },
     };
-    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
-      company_subdir: this.company_subdir,
-    });
-    axios
-      .get(getRolesEndpoint, options)
-      .then((res) => {
-        this.setState({ downloadedRoles: res.data });
-      })
-      .catch((error) => {
-        console.log(error);
+    let getAllPermissionsEndpoint = Endpoints.get(
+      "api",
+      "getAllPermissionActions",
+      {
+        company_subdir: this.company_subdir,
+      }
+    );
+    axios.get(getAllPermissionsEndpoint, headers).then((res) => {
+      this.setState({
+        availablePermissionActions: res.data,
       });
+    });
   }
 
-  componentDidMount() {
-    this.populateRoles();
-  }
-
-  createUser = (e) => {
+  createRole = (e) => {
     e.preventDefault();
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let createUserEndpoint = Endpoints.get("api", "createUser", {
+    let createRoleEndpoint = Endpoints.get("api", "createRole", {
       company_subdir: this.company_subdir,
     });
     let data = {
-      first_name: this.state.first_name,
-      second_name: this.state.second_name,
-      email_address: this.state.email_address,
-      role_id: this.state.role,
-      password: this.state.password,
-      password_confirmation: this.state.password_confirmation,
+      name: this.state.name,
+      display_name: this.state.display_name,
+      appliedPermissions: this.state.appliedPermissions,
     };
     axios
-      .post(createUserEndpoint, data, headers)
+      .post(createRoleEndpoint, data, headers)
       .then((res) => {
         var severity = "info";
         if (res.status === 201) severity = "success";
         this.setState({
-          first_name: "",
-          second_name: "",
-          email_address: "",
-          password: "",
-          password_confirmation: "",
-          role: "",
+          name: "",
+          display_name: "",
           messages: [
             {
               text: res.statusText,
@@ -158,21 +102,27 @@ class Create extends Component {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
             let errorData = error.response.data;
-            if (errorData.first_name)
-              newErrorsState.first_name = errorData.first_name;
-            if (errorData.second_name)
-              newErrorsState.second_name = errorData.second_name;
-            if (errorData.email_address)
-              newErrorsState.email_address = errorData.email_address;
-            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
-            if (errorData.password)
-              newErrorsState.password = errorData.password;
+            if (errorData.name) newErrorsState.name = errorData.name;
+            if (errorData.display_name)
+              newErrorsState.display_name = errorData.display_name;
             this.setState({
               errors: newErrorsState,
             });
           }
         }
       });
+  };
+
+  onPermissionActionChange = (e) => {
+    let updatedAppliedPermissions = this.state.appliedPermissions;
+    if (!e.target.checked) {
+      updatedAppliedPermissions.filter((perm) => perm !== e.target.name);
+    } else {
+      updatedAppliedPermissions = [...updatedAppliedPermissions, e.target.name];
+    }
+    this.setState({
+      appliedPermissions: updatedAppliedPermissions,
+    });
   };
 
   render() {
@@ -195,21 +145,21 @@ class Create extends Component {
             </MuiLink>
             <MuiLink
               component={Link}
-              to={Endpoints.get("client", "usersArea", {
+              to={Endpoints.get("client", "rolesArea", {
                 company_subdir: company_subdir,
               })}
               color="inherit"
             >
-              Users
+              Roles
             </MuiLink>
-            <Typography color="textPrimary">Create User</Typography>
+            <Typography color="textPrimary">Create Role</Typography>
           </Breadcrumbs>
           <Typography
             component="h1"
             variant="h4"
             className="standard-margin-bottom"
           >
-            Create User
+            Create Role
           </Typography>
           <Divider className="standard-margin-bottom" />
           {this.state.messages.map((message, index) => (
@@ -222,167 +172,102 @@ class Create extends Component {
               {message.text}
             </Alert>
           ))}
-          <Box
-            display="flex"
-            flexDirection="row"
-            flexWrap="wrap"
-            justifyContent="space-between"
-          >
+          <form className="xs-full-width" onSubmit={this.createRole}>
             <Box
               display="flex"
-              flexDirection="column"
-              className="xs-full-width md-half-width standard-margin-bottom"
+              flexDirection="row"
+              flexWrap="wrap"
+              justifyContent="space-between"
             >
-              <form className="xs-full-width" onSubmit={this.createUser}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                className="xs-full-width md-half-width standard-margin-bottom"
+              >
                 <Typography component="h3" variant="h5">
-                  User Details
+                  Role Details
                 </Typography>
-                {this.state.errors.first_name.map((error, index) => (
+                {this.state.errors.name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
                     className="standard-margin-bottom"
-                    key={"firstNameError-" + index}
+                    key={"name-" + index}
                   >
                     {error}
                   </Alert>
                 ))}
                 <TextField
-                  name="first_name"
+                  name="name"
                   type="string"
-                  label="First Name"
+                  label="Name"
                   onChange={this.onChange}
-                  value={this.state.first_name}
+                  value={this.state.name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.first_name.length > 0 ? true : false}
+                  error={this.state.errors.name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.second_name.map((error, index) => (
+                {this.state.errors.display_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
                     className="standard-margin-bottom"
-                    key={"secondNameError-" + index}
+                    key={"displayName-" + index}
                   >
                     {error}
                   </Alert>
                 ))}
                 <TextField
-                  name="second_name"
+                  name="display_name"
                   type="string"
-                  label="Second Name"
+                  label="Display Name"
                   onChange={this.onChange}
-                  value={this.state.second_name}
+                  value={this.state.display_name}
                   className="xs-full-width standard-margin-bottom"
                   error={
-                    this.state.errors.second_name.length > 0 ? true : false
+                    this.state.errors.display_name.length > 0 ? true : false
                   }
                   required
                 />
-                {this.state.errors.email_address.map((error, index) => (
-                  <Alert
-                    varient="filled"
-                    severity="error"
-                    className="standard-margin-bottom"
-                    key={"emailAddressError-" + index}
-                  >
-                    {error}
-                  </Alert>
-                ))}
-                <TextField
-                  name="email_address"
-                  type="email"
-                  label="Email Address"
-                  onChange={this.onChange}
-                  value={this.state.email_address}
-                  className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.email_address.length > 0 ? true : false
-                  }
-                  required
-                />
-                {this.state.errors.password.map((error, index) => (
-                  <Alert
-                    varient="filled"
-                    severity="error"
-                    className="standard-margin-bottom"
-                    key={"passwordError-" + index}
-                  >
-                    {error}
-                  </Alert>
-                ))}
-                <TextField
-                  name="password"
-                  type="password"
-                  label="Password"
-                  onChange={this.onChange}
-                  value={this.state.password}
-                  className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
-                  required
-                />
-                <TextField
-                  name="password_confirmation"
-                  type="password"
-                  label="Password Confirmation"
-                  onChange={this.onChange}
-                  value={this.state.password_confirmation}
-                  className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
-                  required
-                />
-                <Select
-                  name="role"
-                  onChange={this.onChange}
-                  value={this.state.role}
-                  className="xs-full-width standard-margin-bottom"
-                  displayEmpty
-                  required
-                >
-                  <MenuItem value="">Select Role</MenuItem>
-                  <Divider />
-                  {Object.keys(this.state.downloadedRoles).map((key) => {
-                    let role = this.state.downloadedRoles[key];
-                    return (
-                      <MenuItem key={role.name} value={role.id}>
-                        {role.display_name}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                <Button
-                  className="xs-full-width"
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                >
-                  Create User
-                </Button>
-              </form>
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="column"
+                className="xs-full-width md-half-width standard-margin-bottom"
+              >
+                <Typography component="h3" variant="h5">
+                  Role Permissions
+                </Typography>
+                <Typography component="p">
+                  Select which permissions this role should have.
+                </Typography>
+                <FormGroup row>
+                  {this.state.availablePermissionActions.map(
+                    (permissionAction) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            name={permissionAction.action}
+                            onChange={this.onPermissionActionChange}
+                          />
+                        }
+                        label={permissionAction.name}
+                        key={permissionAction.action + "-key"}
+                      />
+                    )
+                  )}
+                </FormGroup>
+              </Box>
             </Box>
-            <Box
-              display="flex"
-              flexDirection="column"
-              className="xs-full-width md-half-width standard-margin-bottom"
+            <Button
+              className="xs-full-width"
+              type="submit"
+              variant="contained"
+              color="primary"
             >
-              <Typography component="h3" variant="h5">
-                Applied Permissions
-              </Typography>
-              <Typography component="p">
-                You can't assign seperate permissions to users, only roles.
-              </Typography>
-              <List>
-                {this.state.roleOnShow.permissions.map((permission) => (
-                  <ListItem
-                    disableGutters
-                    key={permission.permission_action.action}
-                  >
-                    <ListItemText primary={permission.permission_action.name} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Box>
+              Create Role
+            </Button>
+          </form>
         </main>
       </DashboardWrapper>
     );

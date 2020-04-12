@@ -50,12 +50,6 @@ class Create extends Component {
     messages: [],
   };
 
-  styles = {
-    textfield: {
-      width: "calc(33% - 20px)",
-    },
-  };
-
   displayRole() {
     let options = {
       headers: {
@@ -80,7 +74,7 @@ class Create extends Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (e.target.name === "role") {
+    if (e.target.name === "role" && e.target.value !== "") {
       this.setState({
         roleOnShow: this.state.downloadedRoles.find(
           (role) => role.id === e.target.value

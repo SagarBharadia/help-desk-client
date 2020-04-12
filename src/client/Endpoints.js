@@ -19,8 +19,10 @@ const Endpoints = {
     getAllRoles: ":company_subdir/api/roles/get/all",
     getSingleRole: ":company_subdir/api/roles/get/:id",
 
+    getAllPermissionActions: ":company_subdir/api/permissions/get/all",
+
     createClient: ":company_subdir/api/clients/create",
-    updateClient: ":company_subdir/api/clients/up date",
+    updateClient: ":company_subdir/api/clients/update",
     deleteClient: ":company_subdir/api/clients/delete",
     getAllClients: ":company_subdir/api/clients/get/all",
     getSingleClient: ":company_subdir/api/clients/get/:id",

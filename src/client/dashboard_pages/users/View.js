@@ -60,12 +60,6 @@ class View extends Component {
     messages: [],
   };
 
-  styles = {
-    textfield: {
-      width: "calc(33% - 20px)",
-    },
-  };
-
   displayRole() {
     let options = {
       headers: {
@@ -90,7 +84,7 @@ class View extends Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (e.target.name === "role") {
+    if (e.target.name === "role" && e.target.value !== "") {
       if (
         this.state.downloadedRoles.findIndex(
           (role) => role.id === e.target.value

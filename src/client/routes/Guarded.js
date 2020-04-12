@@ -8,13 +8,13 @@ import {
   CardActions,
   CardContent,
   Button,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
 class Guarded extends Component {
   state = {
     allowed: false,
-    redirectToThisHelpDesk: false
+    redirectToThisHelpDesk: false,
   };
 
   yourHelpDeskHref = "/" + Cookies.get("auth-company-subdir") + "/dashboard";
@@ -25,7 +25,7 @@ class Guarded extends Component {
     Cookies.remove("token-type");
     Cookies.remove("auth-company-subdir");
     this.setState({
-      redirectToThisHelpDesk: true
+      redirectToThisHelpDesk: true,
     });
     this.props.setAppState("authenticated", false);
   };
@@ -34,7 +34,7 @@ class Guarded extends Component {
     const storedSubdir = Cookies.get("auth-company-subdir");
     if (this.props.match.params.company_subdir === storedSubdir) {
       this.setState({
-        allowed: true
+        allowed: true,
       });
     }
   }
@@ -42,7 +42,7 @@ class Guarded extends Component {
     var cardStyle = {
       maxWidth: "300px",
       marginLeft: "auto",
-      marginRight: "auto"
+      marginRight: "auto",
     };
 
     return (
