@@ -466,13 +466,7 @@ class View extends Component {
                 component={Link}
                 variant="contained"
                 color="default"
-                to={
-                  "/" +
-                  this.company_subdir +
-                  "/users/" +
-                  this.state.user_id +
-                  "/action-logs"
-                }
+                to={"#NEEDTODO"}
               >
                 View Action Logs
               </Button>

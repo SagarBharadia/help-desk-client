@@ -10,6 +10,8 @@ import {
   Button,
 } from "@material-ui/core";
 
+import { Alert } from "@material-ui/lab";
+
 import Endpoints from "../../Endpoints";
 
 import DashboardWrapper from "../layout/DashboardWrapper";
@@ -17,6 +19,9 @@ import DashboardWrapper from "../layout/DashboardWrapper";
 class Home extends Component {
   render() {
     const { company_subdir } = { ...this.props.match.params };
+
+    const getParams = new URLSearchParams(this.props.location.search);
+
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -56,6 +61,18 @@ class Home extends Component {
               Create Role
             </Button>
           </Box>
+          {getParams.get("deleted") === "success" ? (
+            <Alert
+              key={"deleted-alert"}
+              variant="filled"
+              severity="success"
+              className="standard-margin-bottom"
+            >
+              Deleted role.
+            </Alert>
+          ) : (
+            ""
+          )}
           <RolesTable company_subdir={company_subdir} />
         </main>
       </DashboardWrapper>

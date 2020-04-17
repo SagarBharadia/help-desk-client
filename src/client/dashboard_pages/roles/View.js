@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 import Endpoints from "../../Endpoints";
 
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import {
   Box,
@@ -35,6 +35,7 @@ class View extends Component {
       display_name: [],
     },
     messages: [],
+    redirectToDashboard: false,
   };
 
   onChange = (e) => {
@@ -93,6 +94,31 @@ class View extends Component {
     });
   };
 
+  deleteRole = (e) => {
+    let headers = {
+      headers: {
+        Authorization: "Bearer " + Cookies.get("token"),
+      },
+    };
+    let deleteRoleEndpoint = Endpoints.get("api", "deleteRole", {
+      company_subdir: this.company_subdir,
+    });
+    let data = {
+      role_id: this.role_id,
+    };
+    axios.post(deleteRoleEndpoint, data, headers).then((res) => {
+      this.setState({
+        messages: [
+          {
+            text: res.data.message,
+            severity: "success",
+          },
+        ],
+        redirectToDashboard: true,
+      });
+    });
+  };
+
   updateRole = (e) => {
     e.preventDefault();
     let headers = {
@@ -112,7 +138,7 @@ class View extends Component {
     axios
       .post(updateRoleEndpoint, data, headers)
       .then((res) => {
-        var severity = "info";
+        let severity = "info";
         if (res.status === 204) severity = "success";
         this.setState({
           messages: [
@@ -126,7 +152,7 @@ class View extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
+            let newErrorsState = { ...this.state.errors };
             let errorData = error.response.data;
             if (errorData.name) newErrorsState.name = errorData.name;
             if (errorData.display_name)
@@ -158,6 +184,17 @@ class View extends Component {
     return (
       <DashboardWrapper {...this.props}>
         <main>
+          {this.state.redirectToDashboard ? (
+            <Redirect
+              to={
+                Endpoints.get("client", "rolesArea", {
+                  company_subdir: company_subdir,
+                }) + "?deleted=success"
+              }
+            />
+          ) : (
+            ""
+          )}
           <Breadcrumbs
             aria-label="breadcrumb"
             className="standard-margin-bottom"
@@ -291,12 +328,21 @@ class View extends Component {
               </Box>
             </Box>
             <Button
-              className="xs-full-width"
+              className="xs-full-width standard-margin-bottom"
               type="submit"
               variant="contained"
               color="primary"
             >
               Update Role
+            </Button>
+            <Button
+              className="xs-full-width"
+              onClick={this.deleteRole}
+              type="button"
+              variant="contained"
+              color="secondary"
+            >
+              Delete Role
             </Button>
           </form>
         </main>
