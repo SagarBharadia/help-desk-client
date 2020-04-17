@@ -47,28 +47,9 @@ class Create extends Component {
       password: [],
       password_confirmation: [],
     },
+    pageErrors: [],
     messages: [],
   };
-
-  displayRole() {
-    let options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
-    let getSingleRoleEndpoint = Endpoints.get("api", "getSingleRole", {
-      company_subdir: this.company_subdir,
-      id: this.state.role,
-    });
-    axios
-      .get(getSingleRoleEndpoint, options)
-      .then((res) => {
-        if (res.data.role) this.setState({ roleOnShow: res.data.role });
-      })
-      .catch((reason) => {
-        console.log(reason);
-      });
-  }
 
   onChange = (e) => {
     this.setState({
@@ -101,7 +82,17 @@ class Create extends Component {
         this.setState({ downloadedRoles: res.data });
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response) {
+          if (error.response.status === 401) {
+            const prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to view roles. Please contact your admin for this permission.",
+              ],
+            });
+          }
+        }
       });
   }
 
@@ -164,6 +155,14 @@ class Create extends Component {
             this.setState({
               errors: newErrorsState,
             });
+          } else if (error.response.status === 401) {
+            let prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to create roles. Please contact your admin for this permission.",
+              ],
+            });
           }
         }
       });
@@ -171,6 +170,19 @@ class Create extends Component {
 
   render() {
     const company_subdir = this.company_subdir;
+    const {
+      messages,
+      pageErrors,
+      errors,
+      first_name,
+      second_name,
+      password,
+      password_confirmation,
+      email_address,
+      role,
+      downloadedRoles,
+      roleOnShow,
+    } = this.state;
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -206,7 +218,7 @@ class Create extends Component {
             Create User
           </Typography>
           <Divider className="standard-margin-bottom" />
-          {this.state.messages.map((message, index) => (
+          {messages.map((message, index) => (
             <Alert
               key={"message-" + index}
               variant="filled"
@@ -214,6 +226,16 @@ class Create extends Component {
               className="standard-margin-bottom"
             >
               {message.text}
+            </Alert>
+          ))}
+          {pageErrors.map((message, index) => (
+            <Alert
+              key={"pageError" + index}
+              variant="filled"
+              severity="error"
+              className="standard-margin-bottom"
+            >
+              {message}
             </Alert>
           ))}
           <Box
@@ -231,7 +253,7 @@ class Create extends Component {
                 <Typography component="h3" variant="h5">
                   User Details
                 </Typography>
-                {this.state.errors.first_name.map((error, index) => (
+                {errors.first_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -246,12 +268,12 @@ class Create extends Component {
                   type="string"
                   label="First Name"
                   onChange={this.onChange}
-                  value={this.state.first_name}
+                  value={first_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.first_name.length > 0 ? true : false}
+                  error={errors.first_name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.second_name.map((error, index) => (
+                {errors.second_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -266,14 +288,12 @@ class Create extends Component {
                   type="string"
                   label="Second Name"
                   onChange={this.onChange}
-                  value={this.state.second_name}
+                  value={second_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.second_name.length > 0 ? true : false
-                  }
+                  error={errors.second_name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.email_address.map((error, index) => (
+                {errors.email_address.map((error, index) => (
                   <Alert
                     varient="filled"
                     severity="error"
@@ -288,14 +308,12 @@ class Create extends Component {
                   type="email"
                   label="Email Address"
                   onChange={this.onChange}
-                  value={this.state.email_address}
+                  value={email_address}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.email_address.length > 0 ? true : false
-                  }
+                  error={errors.email_address.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.password.map((error, index) => (
+                {errors.password.map((error, index) => (
                   <Alert
                     varient="filled"
                     severity="error"
@@ -310,9 +328,9 @@ class Create extends Component {
                   type="password"
                   label="Password"
                   onChange={this.onChange}
-                  value={this.state.password}
+                  value={password}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
+                  error={errors.password.length > 0 ? true : false}
                   required
                 />
                 <TextField
@@ -320,23 +338,23 @@ class Create extends Component {
                   type="password"
                   label="Password Confirmation"
                   onChange={this.onChange}
-                  value={this.state.password_confirmation}
+                  value={password_confirmation}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
+                  error={errors.password.length > 0 ? true : false}
                   required
                 />
                 <Select
                   name="role"
                   onChange={this.onChange}
-                  value={this.state.role}
+                  value={role}
                   className="xs-full-width standard-margin-bottom"
                   displayEmpty
                   required
                 >
                   <MenuItem value="">Select Role</MenuItem>
                   <Divider />
-                  {Object.keys(this.state.downloadedRoles).map((key) => {
-                    let role = this.state.downloadedRoles[key];
+                  {Object.keys(downloadedRoles).map((key) => {
+                    let role = downloadedRoles[key];
                     return (
                       <MenuItem key={role.name} value={role.id}>
                         {role.display_name}
@@ -366,7 +384,7 @@ class Create extends Component {
                 You can't assign seperate permissions to users, only roles.
               </Typography>
               <List>
-                {this.state.roleOnShow.permissions.map((permission) => (
+                {roleOnShow.permissions.map((permission) => (
                   <ListItem
                     disableGutters
                     key={permission.permission_action.action}
