@@ -6,8 +6,6 @@ import Cookies from "js-cookie";
 import Endpoints from "../../Endpoints";
 
 import { Link } from "react-router-dom";
-import ErrorIcon from "@material-ui/icons/Error";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Box,
@@ -16,236 +14,110 @@ import {
   Typography,
   TextField,
   Divider,
-  Select,
-  MenuItem,
   Button,
-  List,
-  ListItem,
-  ListItemText,
-  ExpansionPanelSummary,
-  ExpansionPanel,
-  ExpansionPanelDetails,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
-
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { Alert } from "@material-ui/lab";
 
 class View extends Component {
   company_subdir = this.props.match.params.company_subdir;
-  user_id = this.props.match.params.user_id;
+  role_id = this.props.match.params.id;
   state = {
-    downloadedRoles: [],
-    user_id: 0,
-    first_name: "Loading...",
-    second_name: "Loading...",
-    email_address: "Loading...",
-    new_password: "",
-    new_password_confirmation: "",
-    role: "",
-    active: 0,
-    roleOnShow: {
-      display_name: "",
-      permissions: [],
-      protected_role: 0,
-    },
+    name: "",
+    display_name: "",
+    appliedPermissions: [],
+    availablePermissionActions: [],
     errors: {
-      first_name: [],
-      second_name: [],
-      email_address: [],
-      role_id: [],
-      password: [],
-      password_confirmation: [],
+      name: [],
+      display_name: [],
     },
     messages: [],
   };
-
-  styles = {
-    textfield: {
-      width: "calc(33% - 20px)",
-    },
-  };
-
-  displayRole() {
-    let options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
-    let getSingleRoleEndpoint = Endpoints.get("api", "getSingleRole", {
-      company_subdir: this.company_subdir,
-      id: this.state.role,
-    });
-    axios
-      .get(getSingleRoleEndpoint, options)
-      .then((res) => {
-        if (res.data.role) this.setState({ roleOnShow: res.data.role });
-      })
-      .catch((reason) => {
-        console.log(reason);
-      });
-  }
 
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (e.target.name === "role") {
-      if (
-        this.state.downloadedRoles.findIndex(
-          (role) => role.id === e.target.value
-        ) !== -1
-      ) {
-        this.setState({
-          roleOnShow: this.state.downloadedRoles.find(
-            (role) => role.id === e.target.value
-          ),
-        });
-      } else {
-        this.setState({
-          roleOnShow: {
-            display_name: "",
-            permissions: [],
-            protected_role: 0,
-          },
-        });
-      }
-    }
   };
-
-  populateRoles() {
-    let options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-      params: {
-        forForm: "true",
-      },
-    };
-    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
-      company_subdir: this.company_subdir,
-    });
-    axios
-      .get(getRolesEndpoint, options)
-      .then((res) => {
-        this.setState({ downloadedRoles: res.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
 
   componentDidMount() {
-    this.populateRoles();
-    this.downloadUser();
+    this.getAllPermissionActions();
+    this.getRole();
   }
 
-  downloadUser() {
-    let getUserEndpoint = Endpoints.get("api", "getSingleUser", {
-      company_subdir: this.company_subdir,
-      id: this.user_id,
-    });
+  getAllPermissionActions() {
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    axios
-      .get(getUserEndpoint, headers)
-      .then((res) => {
-        if (res.data.user) {
-          let user = res.data.user;
-          this.setState({
-            user_id: user.id,
-            first_name: user.first_name,
-            second_name: user.second_name,
-            email_address: user.email_address,
-            role: user.role_id,
-            active: user.active,
-          });
-        }
-      })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
-            if (errorData.first_name)
-              newErrorsState.first_name = errorData.first_name;
-            if (errorData.second_name)
-              newErrorsState.second_name = errorData.second_name;
-            if (errorData.email_address)
-              newErrorsState.email_address = errorData.email_address;
-            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
-            if (errorData.password)
-              newErrorsState.password = errorData.password;
-            this.setState({
-              errors: newErrorsState,
-            });
-          }
-        }
+    let getAllPermissionsEndpoint = Endpoints.get(
+      "api",
+      "getAllPermissionActions",
+      {
+        company_subdir: this.company_subdir,
+      }
+    );
+    axios.get(getAllPermissionsEndpoint, headers).then((res) => {
+      this.setState({
+        availablePermissionActions: res.data,
       });
+    });
   }
 
-  toggleActive = () => {
+  getRole() {
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let toggleActiveUserEndpoint = Endpoints.get("api", "toggleActiveUser", {
+    const getRoleEndpoint = Endpoints.get("api", "getSingleRole", {
       company_subdir: this.company_subdir,
+      id: this.role_id,
     });
-    let data = {
-      user_id: this.state.user_id,
-    };
-    axios
-      .post(toggleActiveUserEndpoint, data, headers)
-      .then((res) => {
-        if (res.status === 204) {
-          let newActiveState = !this.state.active;
-          this.setState({
-            active: newActiveState,
-            messages: [
-              {
-                text: "User active toggled",
-                severity: "success",
-              },
-            ],
-          });
-        }
-      })
-      .catch((error) => console.log(error.response));
+    axios.get(getRoleEndpoint, headers).then((res) => {
+      this.setState({
+        name: res.data.role.name,
+        display_name: res.data.role.display_name,
+        appliedPermissions: res.data.role.permissions,
+      });
+    });
+  }
+
+  roleCan = (permission) => {
+    return this.state.appliedPermissions.some((applPerm) => {
+      return applPerm === permission;
+    });
   };
 
-  updateUser = (e) => {
+  updateRole = (e) => {
     e.preventDefault();
     let headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let updateUserEndpoint = Endpoints.get("api", "updateUser", {
+    let updateRoleEndpoint = Endpoints.get("api", "updateRole", {
       company_subdir: this.company_subdir,
     });
     let data = {
-      user_id: this.state.user_id,
-      first_name: this.state.first_name,
-      second_name: this.state.second_name,
-      email_address: this.state.email_address,
-      role_id: this.state.role,
-      password: this.state.password,
-      password_confirmation: this.state.password_confirmation,
+      role_id: this.role_id,
+      name: this.state.name,
+      display_name: this.state.display_name,
+      appliedPermissions: this.state.appliedPermissions,
     };
     axios
-      .post(updateUserEndpoint, data, headers)
+      .post(updateRoleEndpoint, data, headers)
       .then((res) => {
         var severity = "info";
         if (res.status === 204) severity = "success";
         this.setState({
           messages: [
             {
-              text: "User Updated",
+              text: res.statusText,
               severity: severity,
             },
           ],
@@ -256,15 +128,9 @@ class View extends Component {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
             let errorData = error.response.data;
-            if (errorData.first_name)
-              newErrorsState.first_name = errorData.first_name;
-            if (errorData.second_name)
-              newErrorsState.second_name = errorData.second_name;
-            if (errorData.email_address)
-              newErrorsState.email_address = errorData.email_address;
-            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
-            if (errorData.password)
-              newErrorsState.password = errorData.password;
+            if (errorData.name) newErrorsState.name = errorData.name;
+            if (errorData.display_name)
+              newErrorsState.display_name = errorData.display_name;
             this.setState({
               errors: newErrorsState,
             });
@@ -273,7 +139,22 @@ class View extends Component {
       });
   };
 
+  onPermissionActionChange = (e) => {
+    let updatedAppliedPermissions = this.state.appliedPermissions;
+    if (!e.target.checked) {
+      updatedAppliedPermissions = updatedAppliedPermissions.filter(
+        (perm) => perm !== e.target.name
+      );
+    } else {
+      updatedAppliedPermissions = [...updatedAppliedPermissions, e.target.name];
+    }
+    this.setState({
+      appliedPermissions: updatedAppliedPermissions,
+    });
+  };
+
   render() {
+    const company_subdir = this.company_subdir;
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -283,32 +164,32 @@ class View extends Component {
           >
             <MuiLink
               component={Link}
-              to={"/" + this.company_subdir + "/dashboard"}
+              to={Endpoints.get("client", "dashboard", {
+                company_subdir: company_subdir,
+              })}
               color="inherit"
             >
               Home
             </MuiLink>
             <MuiLink
               component={Link}
-              to={"/" + this.company_subdir + "/users"}
+              to={Endpoints.get("client", "rolesArea", {
+                company_subdir: company_subdir,
+              })}
               color="inherit"
             >
-              Users
+              Roles
             </MuiLink>
-            <Typography color="textPrimary">{this.state.first_name}</Typography>
+            <Typography color="textPrimary">
+              {this.state.display_name}
+            </Typography>
           </Breadcrumbs>
           <Typography
             component="h1"
             variant="h4"
             className="standard-margin-bottom"
           >
-            {this.state.first_name}&nbsp;
-            {this.state.second_name}&nbsp;
-            {this.state.active ? (
-              <CheckCircleIcon style={{ color: "#2ecc71" }} />
-            ) : (
-              <ErrorIcon style={{ color: "#e74c3c" }} />
-            )}
+            {this.state.display_name}
           </Typography>
           <Divider className="standard-margin-bottom" />
           {this.state.messages.map((message, index) => (
@@ -321,200 +202,103 @@ class View extends Component {
               {message.text}
             </Alert>
           ))}
-          <Box
-            display="flex"
-            flexDirection="row"
-            flexWrap="wrap"
-            justifyContent="space-between"
-          >
+          <form className="xs-full-width" onSubmit={this.updateRole}>
             <Box
               display="flex"
-              flexDirection="column"
-              className="xs-full-width md-half-width standard-margin-bottom"
+              flexDirection="row"
+              flexWrap="wrap"
+              justifyContent="space-between"
             >
-              <form
-                className="xs-full-width standard-margin-bottom"
-                onSubmit={this.updateUser}
+              <Box
+                display="flex"
+                flexDirection="column"
+                className="xs-full-width md-half-width standard-margin-bottom"
               >
                 <Typography component="h3" variant="h5">
-                  User Details
+                  Role Details
                 </Typography>
-                {this.state.errors.first_name.map((error, index) => (
+                {this.state.errors.name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
                     className="standard-margin-bottom"
-                    key={"firstNameError-" + index}
+                    key={"name-" + index}
                   >
                     {error}
                   </Alert>
                 ))}
                 <TextField
-                  name="first_name"
+                  name="name"
                   type="string"
-                  label="First Name"
+                  label="Name"
                   onChange={this.onChange}
-                  value={this.state.first_name}
+                  value={this.state.name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.first_name.length > 0 ? true : false}
+                  error={this.state.errors.name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.second_name.map((error, index) => (
+                {this.state.errors.display_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
                     className="standard-margin-bottom"
-                    key={"secondNameError-" + index}
+                    key={"displayName-" + index}
                   >
                     {error}
                   </Alert>
                 ))}
                 <TextField
-                  name="second_name"
+                  name="display_name"
                   type="string"
-                  label="Second Name"
+                  label="Display Name"
                   onChange={this.onChange}
-                  value={this.state.second_name}
+                  value={this.state.display_name}
                   className="xs-full-width standard-margin-bottom"
                   error={
-                    this.state.errors.second_name.length > 0 ? true : false
+                    this.state.errors.display_name.length > 0 ? true : false
                   }
                   required
                 />
-                {this.state.errors.email_address.map((error, index) => (
-                  <Alert
-                    varient="filled"
-                    severity="error"
-                    className="standard-margin-bottom"
-                    key={"emailAddressError-" + index}
-                  >
-                    {error}
-                  </Alert>
-                ))}
-                <TextField
-                  name="email_address"
-                  type="email"
-                  label="Email Address"
-                  onChange={this.onChange}
-                  value={this.state.email_address}
-                  className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.email_address.length > 0 ? true : false
-                  }
-                  required
-                />
-                {this.state.errors.password.map((error, index) => (
-                  <Alert
-                    varient="filled"
-                    severity="error"
-                    className="standard-margin-bottom"
-                    key={"passwordError-" + index}
-                  >
-                    {error}
-                  </Alert>
-                ))}
-                <TextField
-                  name="password"
-                  type="password"
-                  label="New Password"
-                  onChange={this.onChange}
-                  value={this.state.password}
-                  className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
-                />
-                <TextField
-                  name="password_confirmation"
-                  type="password"
-                  label="New Password Confirmation"
-                  onChange={this.onChange}
-                  value={this.state.password_confirmation}
-                  className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
-                />
-                <Select
-                  name="role"
-                  onChange={this.onChange}
-                  value={this.state.role}
-                  className="xs-full-width standard-margin-bottom"
-                  displayEmpty
-                  required
-                >
-                  <MenuItem value="">Select Role</MenuItem>
-                  <Divider />
-                  {Object.keys(this.state.downloadedRoles).map((key) => {
-                    let role = this.state.downloadedRoles[key];
-                    return (
-                      <MenuItem key={role.name} value={role.id}>
-                        {role.display_name}
-                      </MenuItem>
-                    );
-                  })}
-                </Select>
-                <Button
-                  className="xs-full-width"
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                >
-                  Update {this.state.first_name}
-                </Button>
-              </form>
-              <Button
-                className="standard-margin-bottom"
-                onClick={this.toggleActive}
-                type="button"
-                variant="contained"
-                color="secondary"
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="column"
+                className="xs-full-width md-half-width standard-margin-bottom"
               >
-                Toggle Active
-              </Button>
-              <Button
-                component={Link}
-                variant="contained"
-                color="default"
-                to={
-                  "/" +
-                  this.company_subdir +
-                  "/users/" +
-                  this.state.user_id +
-                  "/action-logs"
-                }
-              >
-                View Action Logs
-              </Button>
+                <Typography component="h3" variant="h5">
+                  Role Permissions
+                </Typography>
+                <Typography component="p">
+                  Select which permissions this role should have.
+                </Typography>
+                <FormGroup row>
+                  {this.state.availablePermissionActions.map(
+                    (permissionAction) => (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            name={permissionAction.action}
+                            onChange={this.onPermissionActionChange}
+                          />
+                        }
+                        label={permissionAction.name}
+                        key={permissionAction.action + "-key"}
+                        checked={this.roleCan(permissionAction.action)}
+                      />
+                    )
+                  )}
+                </FormGroup>
+              </Box>
             </Box>
-            <Box
-              display="flex"
-              flexDirection="column"
-              className="xs-full-width md-half-width standard-margin-bottom"
+            <Button
+              className="xs-full-width"
+              type="submit"
+              variant="contained"
+              color="primary"
             >
-              <ExpansionPanel>
-                <ExpansionPanelSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls="applied-permissions-panel-content"
-                  id="panel1a-header"
-                >
-                  <Typography component="h4" variant="h6">
-                    Applied Permissions
-                  </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails style={{ display: "block" }}>
-                  <List>
-                    {this.state.roleOnShow.permissions.map((permission) => (
-                      <ListItem
-                        disableGutters
-                        key={permission.permission_action.action}
-                      >
-                        <ListItemText
-                          primary={permission.permission_action.name}
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
-            </Box>
-          </Box>
+              Update Role
+            </Button>
+          </form>
         </main>
       </DashboardWrapper>
     );

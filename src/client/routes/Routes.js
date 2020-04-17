@@ -19,6 +19,7 @@ import { default as UsersView } from "../dashboard_pages/users/View";
 // Importing Role Pages
 import { default as RolesHome } from "../dashboard_pages/roles/Home";
 import { default as RolesCreate } from "../dashboard_pages/roles/Create";
+import { default as RolesView } from "../dashboard_pages/roles/View";
 
 // Importing error pages
 import Error404 from "../website_pages/error_pages/Error404";
@@ -74,6 +75,13 @@ class Routes extends React.Component {
             path="/:company_subdir/roles/create"
             render={(props) => (
               <Guarded page={RolesCreate} {...this.props} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/:company_subdir/roles/:id"
+            render={(props) => (
+              <Guarded page={RolesView} {...this.props} {...props} />
             )}
           />
           <Route render={(props) => <Error404 {...props} />} />

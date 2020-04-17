@@ -116,7 +116,9 @@ class Create extends Component {
   onPermissionActionChange = (e) => {
     let updatedAppliedPermissions = this.state.appliedPermissions;
     if (!e.target.checked) {
-      updatedAppliedPermissions.filter((perm) => perm !== e.target.name);
+      updatedAppliedPermissions = updatedAppliedPermissions.filter(
+        (perm) => perm !== e.target.name
+      );
     } else {
       updatedAppliedPermissions = [...updatedAppliedPermissions, e.target.name];
     }
