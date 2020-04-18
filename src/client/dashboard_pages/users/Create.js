@@ -23,6 +23,7 @@ import {
 } from "@material-ui/core";
 
 import { Alert } from "@material-ui/lab";
+import Messages from "../layout/Messages";
 
 class Create extends Component {
   company_subdir = this.props.match.params.company_subdir;
@@ -218,26 +219,7 @@ class Create extends Component {
             Create User
           </Typography>
           <Divider className="standard-margin-bottom" />
-          {messages.map((message, index) => (
-            <Alert
-              key={"message-" + index}
-              variant="filled"
-              severity={message.severity}
-              className="standard-margin-bottom"
-            >
-              {message.text}
-            </Alert>
-          ))}
-          {pageErrors.map((message, index) => (
-            <Alert
-              key={"pageError" + index}
-              variant="filled"
-              severity="error"
-              className="standard-margin-bottom"
-            >
-              {message}
-            </Alert>
-          ))}
+          <Messages messages={messages} pageErrors={pageErrors} />
           <Box
             display="flex"
             flexDirection="row"

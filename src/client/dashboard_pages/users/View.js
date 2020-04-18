@@ -30,6 +30,7 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { Alert } from "@material-ui/lab";
+import Messages from "../layout/Messages";
 
 class View extends Component {
   company_subdir = this.props.match.params.company_subdir;
@@ -57,28 +58,9 @@ class View extends Component {
       password: [],
       password_confirmation: [],
     },
+    pageErrors: [],
     messages: [],
   };
-
-  displayRole() {
-    let options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
-    let getSingleRoleEndpoint = Endpoints.get("api", "getSingleRole", {
-      company_subdir: this.company_subdir,
-      id: this.state.role,
-    });
-    axios
-      .get(getSingleRoleEndpoint, options)
-      .then((res) => {
-        if (res.data.role) this.setState({ roleOnShow: res.data.role });
-      })
-      .catch((reason) => {
-        console.log(reason);
-      });
-  }
 
   onChange = (e) => {
     this.setState({
@@ -125,7 +107,17 @@ class View extends Component {
         this.setState({ downloadedRoles: res.data });
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response) {
+          if (error.response.status === 401) {
+            const prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to view roles. Please contact your admin for this permission.",
+              ],
+            });
+          }
+        }
       });
   }
 
@@ -176,6 +168,14 @@ class View extends Component {
             this.setState({
               errors: newErrorsState,
             });
+          } else if (error.response.status === 401) {
+            const prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to view user. Please contact your admin for this permission.",
+              ],
+            });
           }
         }
       });
@@ -209,7 +209,19 @@ class View extends Component {
           });
         }
       })
-      .catch((error) => console.log(error.response));
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to toggle users active state. Please contact your admin for this permission.",
+              ],
+            });
+          }
+        }
+      });
   };
 
   updateUser = (e) => {
@@ -262,12 +274,35 @@ class View extends Component {
             this.setState({
               errors: newErrorsState,
             });
+          } else if (error.response.status === 401) {
+            const prevErrors = this.state.pageErrors;
+            this.setState({
+              pageErrors: [
+                ...prevErrors,
+                "Unauthorized to update user. Please contact your admin for this permission.",
+              ],
+            });
           }
         }
       });
   };
 
   render() {
+    const company_subdir = this.company_subdir;
+    const {
+      messages,
+      pageErrors,
+      errors,
+      first_name,
+      second_name,
+      password,
+      password_confirmation,
+      email_address,
+      role,
+      downloadedRoles,
+      roleOnShow,
+      active,
+    } = this.state;
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -277,44 +312,35 @@ class View extends Component {
           >
             <MuiLink
               component={Link}
-              to={"/" + this.company_subdir + "/dashboard"}
+              to={"/" + company_subdir + "/dashboard"}
               color="inherit"
             >
               Home
             </MuiLink>
             <MuiLink
               component={Link}
-              to={"/" + this.company_subdir + "/users"}
+              to={"/" + company_subdir + "/users"}
               color="inherit"
             >
               Users
             </MuiLink>
-            <Typography color="textPrimary">{this.state.first_name}</Typography>
+            <Typography color="textPrimary">{first_name}</Typography>
           </Breadcrumbs>
           <Typography
             component="h1"
             variant="h4"
             className="standard-margin-bottom"
           >
-            {this.state.first_name}&nbsp;
-            {this.state.second_name}&nbsp;
-            {this.state.active ? (
+            {first_name}&nbsp;
+            {second_name}&nbsp;
+            {active ? (
               <CheckCircleIcon style={{ color: "#2ecc71" }} />
             ) : (
               <ErrorIcon style={{ color: "#e74c3c" }} />
             )}
           </Typography>
           <Divider className="standard-margin-bottom" />
-          {this.state.messages.map((message, index) => (
-            <Alert
-              key={"message-" + index}
-              variant="filled"
-              severity={message.severity}
-              className="standard-margin-bottom"
-            >
-              {message.text}
-            </Alert>
-          ))}
+          <Messages messages={messages} pageErrors={pageErrors} />
           <Box
             display="flex"
             flexDirection="row"
@@ -333,7 +359,7 @@ class View extends Component {
                 <Typography component="h3" variant="h5">
                   User Details
                 </Typography>
-                {this.state.errors.first_name.map((error, index) => (
+                {errors.first_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -348,12 +374,12 @@ class View extends Component {
                   type="string"
                   label="First Name"
                   onChange={this.onChange}
-                  value={this.state.first_name}
+                  value={first_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.first_name.length > 0 ? true : false}
+                  error={errors.first_name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.second_name.map((error, index) => (
+                {errors.second_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -368,14 +394,12 @@ class View extends Component {
                   type="string"
                   label="Second Name"
                   onChange={this.onChange}
-                  value={this.state.second_name}
+                  value={second_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.second_name.length > 0 ? true : false
-                  }
+                  error={errors.second_name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.email_address.map((error, index) => (
+                {errors.email_address.map((error, index) => (
                   <Alert
                     varient="filled"
                     severity="error"
@@ -390,14 +414,12 @@ class View extends Component {
                   type="email"
                   label="Email Address"
                   onChange={this.onChange}
-                  value={this.state.email_address}
+                  value={email_address}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.email_address.length > 0 ? true : false
-                  }
+                  error={errors.email_address.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.password.map((error, index) => (
+                {errors.password.map((error, index) => (
                   <Alert
                     varient="filled"
                     severity="error"
@@ -412,31 +434,31 @@ class View extends Component {
                   type="password"
                   label="New Password"
                   onChange={this.onChange}
-                  value={this.state.password}
+                  value={password}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
+                  error={errors.password.length > 0 ? true : false}
                 />
                 <TextField
                   name="password_confirmation"
                   type="password"
                   label="New Password Confirmation"
                   onChange={this.onChange}
-                  value={this.state.password_confirmation}
+                  value={password_confirmation}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.password.length > 0 ? true : false}
+                  error={errors.password.length > 0 ? true : false}
                 />
                 <Select
                   name="role"
                   onChange={this.onChange}
-                  value={this.state.role}
+                  value={role}
                   className="xs-full-width standard-margin-bottom"
                   displayEmpty
                   required
                 >
                   <MenuItem value="">Select Role</MenuItem>
                   <Divider />
-                  {Object.keys(this.state.downloadedRoles).map((key) => {
-                    let role = this.state.downloadedRoles[key];
+                  {Object.keys(downloadedRoles).map((key) => {
+                    let role = downloadedRoles[key];
                     return (
                       <MenuItem key={role.name} value={role.id}>
                         {role.display_name}
@@ -450,7 +472,7 @@ class View extends Component {
                   variant="contained"
                   color="primary"
                 >
-                  Update {this.state.first_name}
+                  Update {first_name}
                 </Button>
               </form>
               <Button
@@ -488,7 +510,7 @@ class View extends Component {
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails style={{ display: "block" }}>
                   <List>
-                    {this.state.roleOnShow.permissions.map((permission) => (
+                    {roleOnShow.permissions.map((permission) => (
                       <ListItem
                         disableGutters
                         key={permission.permission_action.action}
