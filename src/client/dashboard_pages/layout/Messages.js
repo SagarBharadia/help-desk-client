@@ -6,7 +6,7 @@ class Messages extends Component {
   render() {
     return (
       <div>
-        {this.props.messages.map((message, index) => (
+        {this.props.pageMessages.map((message, index) => (
           <Alert
             key={"message-" + index}
             variant="filled"

@@ -49,7 +49,7 @@ class Create extends Component {
       password_confirmation: [],
     },
     pageErrors: [],
-    messages: [],
+    pageMessages: [],
   };
 
   onChange = (e) => {
@@ -131,7 +131,7 @@ class Create extends Component {
           password: "",
           password_confirmation: "",
           role: "",
-          messages: [
+          pageMessages: [
             {
               text: res.statusText,
               severity: severity,
@@ -172,7 +172,7 @@ class Create extends Component {
   render() {
     const company_subdir = this.company_subdir;
     const {
-      messages,
+      pageMessages,
       pageErrors,
       errors,
       first_name,
@@ -219,7 +219,7 @@ class Create extends Component {
             Create User
           </Typography>
           <Divider className="standard-margin-bottom" />
-          <Messages messages={messages} pageErrors={pageErrors} />
+          <Messages pageMessages={pageMessages} pageErrors={pageErrors} />
           <Box
             display="flex"
             flexDirection="row"

@@ -59,7 +59,7 @@ class View extends Component {
       password_confirmation: [],
     },
     pageErrors: [],
-    messages: [],
+    pageMessages: [],
   };
 
   onChange = (e) => {
@@ -200,7 +200,7 @@ class View extends Component {
           let newActiveState = !this.state.active;
           this.setState({
             active: newActiveState,
-            messages: [
+            pageMessages: [
               {
                 text: "User active toggled",
                 severity: "success",
@@ -249,7 +249,7 @@ class View extends Component {
         var severity = "info";
         if (res.status === 204) severity = "success";
         this.setState({
-          messages: [
+          pageMessages: [
             {
               text: "User Updated",
               severity: severity,
@@ -290,7 +290,7 @@ class View extends Component {
   render() {
     const company_subdir = this.company_subdir;
     const {
-      messages,
+      pageMessages,
       pageErrors,
       errors,
       first_name,
@@ -340,7 +340,7 @@ class View extends Component {
             )}
           </Typography>
           <Divider className="standard-margin-bottom" />
-          <Messages messages={messages} pageErrors={pageErrors} />
+          <Messages pageMessages={pageMessages} pageErrors={pageErrors} />
           <Box
             display="flex"
             flexDirection="row"

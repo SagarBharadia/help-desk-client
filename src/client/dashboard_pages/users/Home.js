@@ -19,7 +19,7 @@ import Messages from "../layout/Messages";
 class Home extends Component {
   state = {
     pageErrors: [],
-    messages: [],
+    pageMessages: [],
   };
 
   setPageErrors = (pageErrors) => {
@@ -30,7 +30,7 @@ class Home extends Component {
 
   render() {
     const { company_subdir } = { ...this.props.match.params };
-    const { pageErrors, messages } = { ...this.state };
+    const { pageErrors, pageMessages } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -70,7 +70,7 @@ class Home extends Component {
               Create User
             </Button>
           </Box>
-          <Messages pageErrors={pageErrors} messages={messages} />
+          <Messages pageErrors={pageErrors} pageMessages={pageMessages} />
           <UsersTable
             company_subdir={company_subdir}
             pageErrors={pageErrors}
