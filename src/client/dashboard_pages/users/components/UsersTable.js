@@ -39,11 +39,24 @@ class UsersTable extends Component {
         this.setState({
           users: data.data,
         });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const prevPageErrors = this.props.pageErrors;
+            const pageErrors = [
+              ...prevPageErrors,
+              "Unauthorized to read users. Please contact your admin for this permission.",
+            ];
+            this.props.setPageErrors(pageErrors);
+          }
+        }
       });
   }
 
   render() {
     const { company_subdir } = { ...this.props };
+    const { users } = { ...this.state };
     return (
       <TableContainer component={Paper}>
         <Table aria-label="table containing the users">
@@ -57,8 +70,8 @@ class UsersTable extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(this.state.users).map((key) => {
-              let user = this.state.users[key];
+            {Object.keys(users).map((key) => {
+              let user = users[key];
               return (
                 <TableRow key={user.id}>
                   <TableCell component="th" scope="row">

@@ -14,9 +14,23 @@ import Endpoints from "../../Endpoints";
 
 import DashboardWrapper from "../layout/DashboardWrapper";
 
+import Messages from "../layout/Messages";
+
 class Home extends Component {
+  state = {
+    pageErrors: [],
+    messages: [],
+  };
+
+  setPageErrors = (pageErrors) => {
+    this.setState({
+      pageErrors: pageErrors,
+    });
+  };
+
   render() {
     const { company_subdir } = { ...this.props.match.params };
+    const { pageErrors, messages } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -56,7 +70,12 @@ class Home extends Component {
               Create User
             </Button>
           </Box>
-          <UsersTable company_subdir={company_subdir} />
+          <Messages pageErrors={pageErrors} messages={messages} />
+          <UsersTable
+            company_subdir={company_subdir}
+            pageErrors={pageErrors}
+            setPageErrors={this.setPageErrors}
+          />
         </main>
       </DashboardWrapper>
     );
