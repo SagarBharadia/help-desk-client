@@ -21,6 +21,7 @@ import {
 } from "@material-ui/core";
 
 import { Alert } from "@material-ui/lab";
+import Messages from "../layout/Messages";
 
 class View extends Component {
   company_subdir = this.props.match.params.company_subdir;
@@ -34,7 +35,8 @@ class View extends Component {
       name: [],
       display_name: [],
     },
-    messages: [],
+    pageMessages: [],
+    pageErrors: [],
     redirectToDashboard: false,
   };
 
@@ -62,11 +64,26 @@ class View extends Component {
         company_subdir: this.company_subdir,
       }
     );
-    axios.get(getAllPermissionsEndpoint, headers).then((res) => {
-      this.setState({
-        availablePermissionActions: res.data,
+    axios
+      .get(getAllPermissionsEndpoint, headers)
+      .then((res) => {
+        this.setState({
+          availablePermissionActions: res.data,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to get all permission actions. Please contact your admin for this permission.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          }
+        }
       });
-    });
   }
 
   getRole() {
@@ -79,13 +96,36 @@ class View extends Component {
       company_subdir: this.company_subdir,
       id: this.role_id,
     });
-    axios.get(getRoleEndpoint, headers).then((res) => {
-      this.setState({
-        name: res.data.role.name,
-        display_name: res.data.role.display_name,
-        appliedPermissions: res.data.role.permissions,
+    axios
+      .get(getRoleEndpoint, headers)
+      .then((res) => {
+        this.setState({
+          name: res.data.role.name,
+          display_name: res.data.role.display_name,
+          appliedPermissions: res.data.role.permissions,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to view role. Please contact your admin for this permission.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          } else if (error.response.status === 404) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "This role doesn't exist.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          }
+        }
       });
-    });
   }
 
   roleCan = (permission) => {
@@ -106,17 +146,32 @@ class View extends Component {
     let data = {
       role_id: this.role_id,
     };
-    axios.post(deleteRoleEndpoint, data, headers).then((res) => {
-      this.setState({
-        messages: [
-          {
-            text: res.data.message,
-            severity: "success",
-          },
-        ],
-        redirectToDashboard: true,
+    axios
+      .post(deleteRoleEndpoint, data, headers)
+      .then((res) => {
+        this.setState({
+          pageMessages: [
+            {
+              text: res.data.message,
+              severity: "success",
+            },
+          ],
+          redirectToDashboard: true,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to delete role. Please contact your admin for this permission.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          }
+        }
       });
-    });
   };
 
   updateRole = (e) => {
@@ -141,7 +196,7 @@ class View extends Component {
         let severity = "info";
         if (res.status === 204) severity = "success";
         this.setState({
-          messages: [
+          pageMessages: [
             {
               text: res.statusText,
               severity: severity,
@@ -159,6 +214,14 @@ class View extends Component {
               newErrorsState.display_name = errorData.display_name;
             this.setState({
               errors: newErrorsState,
+            });
+          } else if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to update role. Please contact your admin for this permission.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
             });
           }
         }
@@ -181,10 +244,21 @@ class View extends Component {
 
   render() {
     const company_subdir = this.company_subdir;
+    const {
+      name,
+      display_name,
+      availablePermissionActions,
+      errors,
+      redirectToDashboard,
+      pageMessages,
+      pageErrors,
+    } = {
+      ...this.state,
+    };
     return (
       <DashboardWrapper {...this.props}>
         <main>
-          {this.state.redirectToDashboard ? (
+          {redirectToDashboard ? (
             <Redirect
               to={
                 Endpoints.get("client", "rolesArea", {
@@ -217,28 +291,17 @@ class View extends Component {
             >
               Roles
             </MuiLink>
-            <Typography color="textPrimary">
-              {this.state.display_name}
-            </Typography>
+            <Typography color="textPrimary">{display_name}</Typography>
           </Breadcrumbs>
           <Typography
             component="h1"
             variant="h4"
             className="standard-margin-bottom"
           >
-            {this.state.display_name}
+            {display_name}
           </Typography>
           <Divider className="standard-margin-bottom" />
-          {this.state.messages.map((message, index) => (
-            <Alert
-              key={"message-" + index}
-              variant="filled"
-              severity={message.severity}
-              className="standard-margin-bottom"
-            >
-              {message.text}
-            </Alert>
-          ))}
+          <Messages pageMessages={pageMessages} pageErrors={pageErrors} />
           <form className="xs-full-width" onSubmit={this.updateRole}>
             <Box
               display="flex"
@@ -254,7 +317,7 @@ class View extends Component {
                 <Typography component="h3" variant="h5">
                   Role Details
                 </Typography>
-                {this.state.errors.name.map((error, index) => (
+                {errors.name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -269,12 +332,12 @@ class View extends Component {
                   type="string"
                   label="Name"
                   onChange={this.onChange}
-                  value={this.state.name}
+                  value={name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.name.length > 0 ? true : false}
+                  error={errors.name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.display_name.map((error, index) => (
+                {errors.display_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -289,11 +352,9 @@ class View extends Component {
                   type="string"
                   label="Display Name"
                   onChange={this.onChange}
-                  value={this.state.display_name}
+                  value={display_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.display_name.length > 0 ? true : false
-                  }
+                  error={errors.display_name.length > 0 ? true : false}
                   required
                 />
               </Box>
@@ -309,21 +370,19 @@ class View extends Component {
                   Select which permissions this role should have.
                 </Typography>
                 <FormGroup row>
-                  {this.state.availablePermissionActions.map(
-                    (permissionAction) => (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name={permissionAction.action}
-                            onChange={this.onPermissionActionChange}
-                          />
-                        }
-                        label={permissionAction.name}
-                        key={permissionAction.action + "-key"}
-                        checked={this.roleCan(permissionAction.action)}
-                      />
-                    )
-                  )}
+                  {availablePermissionActions.map((permissionAction) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name={permissionAction.action}
+                          onChange={this.onPermissionActionChange}
+                        />
+                      }
+                      label={permissionAction.name}
+                      key={permissionAction.action + "-key"}
+                      checked={this.roleCan(permissionAction.action)}
+                    />
+                  ))}
                 </FormGroup>
               </Box>
             </Box>

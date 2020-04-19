@@ -33,15 +33,29 @@ class RolesTable extends Component {
     let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
-    axios.get(getRolesEndpoint, options).then((res) => {
-      this.setState({
-        roles: res.data,
+    axios
+      .get(getRolesEndpoint, options)
+      .then((res) => {
+        this.setState({
+          roles: res.data,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.props.pageErrors,
+              "Unauthorized to view roles. Please contact your admin for this permission.",
+            ];
+            this.props.setPageErrors(pageErrors);
+          }
+        }
       });
-    });
   }
 
   render() {
     const { company_subdir } = { ...this.props };
+    const { roles } = { ...this.state };
     return (
       <TableContainer component={Paper}>
         <Table aria-label="table containing the users">
@@ -54,8 +68,8 @@ class RolesTable extends Component {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(this.state.roles).map((key) => {
-              let role = this.state.roles[key];
+            {Object.keys(roles).map((key) => {
+              let role = roles[key];
               return (
                 <TableRow key={role.id}>
                   <TableCell component="th" scope="row">

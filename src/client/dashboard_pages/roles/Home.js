@@ -10,17 +10,37 @@ import {
   Button,
 } from "@material-ui/core";
 
-import { Alert } from "@material-ui/lab";
-
 import Endpoints from "../../Endpoints";
 
 import DashboardWrapper from "../layout/DashboardWrapper";
+import Messages from "../layout/Messages";
 
 class Home extends Component {
+  state = {
+    pageErrors: [],
+    pageMessages: [],
+  };
+
+  setPageErrors = (pageErrors) => {
+    this.setState({ pageErrors: pageErrors });
+  };
+
+  componentDidMount() {
+    const getParams = new URLSearchParams(this.props.location.search);
+
+    if (getParams.get("deleted") === "success") {
+      const pageMessages = [
+        ...this.state.pageMessages,
+        { severity: "success", text: "Deleted role successfully." },
+      ];
+      this.setState({ pageMessages: pageMessages });
+    }
+  }
+
   render() {
     const { company_subdir } = { ...this.props.match.params };
 
-    const getParams = new URLSearchParams(this.props.location.search);
+    const { pageErrors, pageMessages } = { ...this.state };
 
     return (
       <DashboardWrapper {...this.props}>
@@ -61,19 +81,12 @@ class Home extends Component {
               Create Role
             </Button>
           </Box>
-          {getParams.get("deleted") === "success" ? (
-            <Alert
-              key={"deleted-alert"}
-              variant="filled"
-              severity="success"
-              className="standard-margin-bottom"
-            >
-              Deleted role.
-            </Alert>
-          ) : (
-            ""
-          )}
-          <RolesTable company_subdir={company_subdir} />
+          <Messages pageErrors={pageErrors} pageMessages={pageMessages} />
+          <RolesTable
+            pageErrors={pageErrors}
+            setPageErrors={this.setPageErrors}
+            company_subdir={company_subdir}
+          />
         </main>
       </DashboardWrapper>
     );

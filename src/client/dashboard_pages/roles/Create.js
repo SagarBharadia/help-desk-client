@@ -22,6 +22,8 @@ import {
 
 import { Alert } from "@material-ui/lab";
 
+import Messages from "../layout/Messages";
+
 class Create extends Component {
   company_subdir = this.props.match.params.company_subdir;
   state = {
@@ -33,7 +35,8 @@ class Create extends Component {
       name: [],
       display_name: [],
     },
-    messages: [],
+    pageMessages: [],
+    pageErrors: [],
   };
 
   onChange = (e) => {
@@ -59,11 +62,24 @@ class Create extends Component {
         company_subdir: this.company_subdir,
       }
     );
-    axios.get(getAllPermissionsEndpoint, headers).then((res) => {
-      this.setState({
-        availablePermissionActions: res.data,
+    axios
+      .get(getAllPermissionsEndpoint, headers)
+      .then((res) => {
+        this.setState({
+          availablePermissionActions: res.data,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to get permissions. Please contact your admin for this permission.",
+            ];
+            this.setState({ pageErrors: pageErrors });
+          }
+        }
       });
-    });
   }
 
   createRole = (e) => {
@@ -89,9 +105,9 @@ class Create extends Component {
         this.setState({
           name: "",
           display_name: "",
-          messages: [
+          pageMessages: [
             {
-              text: res.statusText,
+              text: res.data.message,
               severity: severity,
             },
           ],
@@ -108,6 +124,12 @@ class Create extends Component {
             this.setState({
               errors: newErrorsState,
             });
+          } else if (error.response.status === 401) {
+            var pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to create roles. Please contact your admin for this permission.",
+            ];
+            this.setState({ pageErrors: pageErrors });
           }
         }
       });
@@ -129,6 +151,9 @@ class Create extends Component {
 
   render() {
     const company_subdir = this.company_subdir;
+    const { pageMessages, pageErrors, errors, name, display_name } = {
+      ...this.state,
+    };
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -164,16 +189,7 @@ class Create extends Component {
             Create Role
           </Typography>
           <Divider className="standard-margin-bottom" />
-          {this.state.messages.map((message, index) => (
-            <Alert
-              key={"message-" + index}
-              variant="filled"
-              severity={message.severity}
-              className="standard-margin-bottom"
-            >
-              {message.text}
-            </Alert>
-          ))}
+          <Messages pageErrors={pageErrors} pageMessages={pageMessages} />
           <form className="xs-full-width" onSubmit={this.createRole}>
             <Box
               display="flex"
@@ -189,7 +205,7 @@ class Create extends Component {
                 <Typography component="h3" variant="h5">
                   Role Details
                 </Typography>
-                {this.state.errors.name.map((error, index) => (
+                {errors.name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -204,12 +220,12 @@ class Create extends Component {
                   type="string"
                   label="Name"
                   onChange={this.onChange}
-                  value={this.state.name}
+                  value={name}
                   className="xs-full-width standard-margin-bottom"
-                  error={this.state.errors.name.length > 0 ? true : false}
+                  error={errors.name.length > 0 ? true : false}
                   required
                 />
-                {this.state.errors.display_name.map((error, index) => (
+                {errors.display_name.map((error, index) => (
                   <Alert
                     variant="filled"
                     severity="error"
@@ -224,11 +240,9 @@ class Create extends Component {
                   type="string"
                   label="Display Name"
                   onChange={this.onChange}
-                  value={this.state.display_name}
+                  value={display_name}
                   className="xs-full-width standard-margin-bottom"
-                  error={
-                    this.state.errors.display_name.length > 0 ? true : false
-                  }
+                  error={errors.display_name.length > 0 ? true : false}
                   required
                 />
               </Box>
