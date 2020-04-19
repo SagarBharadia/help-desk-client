@@ -27,13 +27,13 @@ class UsersTable extends Component {
     const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
       company_subdir: this.company_subdir,
     });
-    const options = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
     axios
-      .get(getAllUsersEndpoint, options)
+      .get(getAllUsersEndpoint, headers)
       .then((res) => res.data)
       .then((data) => {
         this.setState({

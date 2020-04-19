@@ -66,7 +66,7 @@ class Create extends Component {
   };
 
   populateRoles() {
-    let options = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
@@ -74,11 +74,11 @@ class Create extends Component {
         forForm: "true",
       },
     };
-    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+    const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
     axios
-      .get(getRolesEndpoint, options)
+      .get(getRolesEndpoint, headers)
       .then((res) => {
         this.setState({ downloadedRoles: res.data });
       })
@@ -103,15 +103,15 @@ class Create extends Component {
 
   createUser = (e) => {
     e.preventDefault();
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let createUserEndpoint = Endpoints.get("api", "createUser", {
+    const createUserEndpoint = Endpoints.get("api", "createUser", {
       company_subdir: this.company_subdir,
     });
-    let data = {
+    const data = {
       first_name: this.state.first_name,
       second_name: this.state.second_name,
       email_address: this.state.email_address,
@@ -122,8 +122,6 @@ class Create extends Component {
     axios
       .post(createUserEndpoint, data, headers)
       .then((res) => {
-        var severity = "info";
-        if (res.status === 201) severity = "success";
         this.setState({
           first_name: "",
           second_name: "",
@@ -133,8 +131,8 @@ class Create extends Component {
           role: "",
           pageMessages: [
             {
-              text: res.statusText,
-              severity: severity,
+              text: res.data.message,
+              severity: "success",
             },
           ],
         });
@@ -143,7 +141,7 @@ class Create extends Component {
         if (error.response) {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
+            const errorData = error.response.data;
             if (errorData.first_name)
               newErrorsState.first_name = errorData.first_name;
             if (errorData.second_name)

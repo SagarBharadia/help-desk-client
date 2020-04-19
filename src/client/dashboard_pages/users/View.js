@@ -90,7 +90,7 @@ class View extends Component {
   };
 
   populateRoles() {
-    let options = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
@@ -98,11 +98,11 @@ class View extends Component {
         forForm: "true",
       },
     };
-    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+    const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
     axios
-      .get(getRolesEndpoint, options)
+      .get(getRolesEndpoint, headers)
       .then((res) => {
         this.setState({ downloadedRoles: res.data });
       })
@@ -127,11 +127,11 @@ class View extends Component {
   }
 
   downloadUser() {
-    let getUserEndpoint = Endpoints.get("api", "getSingleUser", {
+    const getUserEndpoint = Endpoints.get("api", "getSingleUser", {
       company_subdir: this.company_subdir,
       id: this.user_id,
     });
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
@@ -140,7 +140,7 @@ class View extends Component {
       .get(getUserEndpoint, headers)
       .then((res) => {
         if (res.data.user) {
-          let user = res.data.user;
+          const user = res.data.user;
           this.setState({
             user_id: user.id,
             first_name: user.first_name,
@@ -154,8 +154,8 @@ class View extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
+            let newErrorsState = { ...this.state.errors };
+            const errorData = error.response.data;
             if (errorData.first_name)
               newErrorsState.first_name = errorData.first_name;
             if (errorData.second_name)
@@ -182,22 +182,22 @@ class View extends Component {
   }
 
   toggleActive = () => {
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let toggleActiveUserEndpoint = Endpoints.get("api", "toggleActiveUser", {
+    const toggleActiveUserEndpoint = Endpoints.get("api", "toggleActiveUser", {
       company_subdir: this.company_subdir,
     });
-    let data = {
+    const data = {
       user_id: this.state.user_id,
     };
     axios
       .post(toggleActiveUserEndpoint, data, headers)
       .then((res) => {
         if (res.status === 204) {
-          let newActiveState = !this.state.active;
+          const newActiveState = !this.state.active;
           this.setState({
             active: newActiveState,
             pageMessages: [
@@ -226,15 +226,15 @@ class View extends Component {
 
   updateUser = (e) => {
     e.preventDefault();
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let updateUserEndpoint = Endpoints.get("api", "updateUser", {
+    const updateUserEndpoint = Endpoints.get("api", "updateUser", {
       company_subdir: this.company_subdir,
     });
-    let data = {
+    const data = {
       user_id: this.state.user_id,
       first_name: this.state.first_name,
       second_name: this.state.second_name,
@@ -246,13 +246,11 @@ class View extends Component {
     axios
       .post(updateUserEndpoint, data, headers)
       .then((res) => {
-        var severity = "info";
-        if (res.status === 204) severity = "success";
         this.setState({
           pageMessages: [
             {
-              text: "User Updated",
-              severity: severity,
+              text: res.data.message,
+              severity: "success",
             },
           ],
         });
@@ -260,8 +258,8 @@ class View extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
+            let newErrorsState = { ...this.state.errors };
+            const errorData = error.response.data;
             if (errorData.first_name)
               newErrorsState.first_name = errorData.first_name;
             if (errorData.second_name)
