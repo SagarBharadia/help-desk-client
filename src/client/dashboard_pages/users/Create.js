@@ -85,12 +85,12 @@ class Create extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 401) {
-            const prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to view roles. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to view roles. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }
@@ -157,12 +157,12 @@ class Create extends Component {
               errors: newErrorsState,
             });
           } else if (error.response.status === 401) {
-            let prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to create roles. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to create roles. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }

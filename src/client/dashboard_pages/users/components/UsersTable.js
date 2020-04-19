@@ -43,9 +43,8 @@ class UsersTable extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 401) {
-            const prevPageErrors = this.props.pageErrors;
             const pageErrors = [
-              ...prevPageErrors,
+              ...this.props.pageErrors,
               "Unauthorized to read users. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);

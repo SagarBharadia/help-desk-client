@@ -109,12 +109,12 @@ class View extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 401) {
-            const prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to view roles. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to view roles. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }
@@ -169,12 +169,12 @@ class View extends Component {
               errors: newErrorsState,
             });
           } else if (error.response.status === 401) {
-            const prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to view user. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to view user. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }
@@ -212,12 +212,12 @@ class View extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 401) {
-            const prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to toggle users active state. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to toggle users active state. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }
@@ -275,12 +275,12 @@ class View extends Component {
               errors: newErrorsState,
             });
           } else if (error.response.status === 401) {
-            const prevErrors = this.state.pageErrors;
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to update user. Please contact your admin for this permission.",
+            ];
             this.setState({
-              pageErrors: [
-                ...prevErrors,
-                "Unauthorized to update user. Please contact your admin for this permission.",
-              ],
+              pageErrors: pageErrors,
             });
           }
         }
