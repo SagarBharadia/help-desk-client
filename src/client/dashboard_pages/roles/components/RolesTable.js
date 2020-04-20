@@ -22,7 +22,7 @@ class RolesTable extends Component {
   };
 
   componentDidMount() {
-    let options = {
+    const options = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
@@ -30,7 +30,7 @@ class RolesTable extends Component {
         forForm: "true",
       },
     };
-    let getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+    const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
     axios

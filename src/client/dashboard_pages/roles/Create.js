@@ -50,12 +50,12 @@ class Create extends Component {
   }
 
   getAllPermissionActions() {
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let getAllPermissionsEndpoint = Endpoints.get(
+    const getAllPermissionsEndpoint = Endpoints.get(
       "api",
       "getAllPermissionActions",
       {
@@ -84,12 +84,12 @@ class Create extends Component {
 
   createRole = (e) => {
     e.preventDefault();
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let createRoleEndpoint = Endpoints.get("api", "createRole", {
+    const createRoleEndpoint = Endpoints.get("api", "createRole", {
       company_subdir: this.company_subdir,
     });
     let data = {
@@ -100,15 +100,13 @@ class Create extends Component {
     axios
       .post(createRoleEndpoint, data, headers)
       .then((res) => {
-        var severity = "info";
-        if (res.status === 201) severity = "success";
         this.setState({
           name: "",
           display_name: "",
           pageMessages: [
             {
               text: res.data.message,
-              severity: severity,
+              severity: "success",
             },
           ],
         });
@@ -117,7 +115,7 @@ class Create extends Component {
         if (error.response) {
           if (error.response.status === 422) {
             var newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
+            const errorData = error.response.data;
             if (errorData.name) newErrorsState.name = errorData.name;
             if (errorData.display_name)
               newErrorsState.display_name = errorData.display_name;
@@ -125,7 +123,7 @@ class Create extends Component {
               errors: newErrorsState,
             });
           } else if (error.response.status === 401) {
-            var pageErrors = [
+            const pageErrors = [
               ...this.state.pageErrors,
               "Unauthorized to create roles. Please contact your admin for this permission.",
             ];

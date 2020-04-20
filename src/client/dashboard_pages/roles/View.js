@@ -52,12 +52,12 @@ class View extends Component {
   }
 
   getAllPermissionActions() {
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let getAllPermissionsEndpoint = Endpoints.get(
+    const getAllPermissionsEndpoint = Endpoints.get(
       "api",
       "getAllPermissionActions",
       {
@@ -87,7 +87,7 @@ class View extends Component {
   }
 
   getRole() {
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
@@ -135,15 +135,15 @@ class View extends Component {
   };
 
   deleteRole = (e) => {
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let deleteRoleEndpoint = Endpoints.get("api", "deleteRole", {
+    const deleteRoleEndpoint = Endpoints.get("api", "deleteRole", {
       company_subdir: this.company_subdir,
     });
-    let data = {
+    const data = {
       role_id: this.role_id,
     };
     axios
@@ -176,15 +176,15 @@ class View extends Component {
 
   updateRole = (e) => {
     e.preventDefault();
-    let headers = {
+    const headers = {
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
       },
     };
-    let updateRoleEndpoint = Endpoints.get("api", "updateRole", {
+    const updateRoleEndpoint = Endpoints.get("api", "updateRole", {
       company_subdir: this.company_subdir,
     });
-    let data = {
+    const data = {
       role_id: this.role_id,
       name: this.state.name,
       display_name: this.state.display_name,
@@ -193,13 +193,11 @@ class View extends Component {
     axios
       .post(updateRoleEndpoint, data, headers)
       .then((res) => {
-        let severity = "info";
-        if (res.status === 204) severity = "success";
         this.setState({
           pageMessages: [
             {
-              text: res.statusText,
-              severity: severity,
+              text: res.data.message,
+              severity: "success",
             },
           ],
         });
@@ -208,7 +206,7 @@ class View extends Component {
         if (error.response) {
           if (error.response.status === 422) {
             let newErrorsState = { ...this.state.errors };
-            let errorData = error.response.data;
+            const errorData = error.response.data;
             if (errorData.name) newErrorsState.name = errorData.name;
             if (errorData.display_name)
               newErrorsState.display_name = errorData.display_name;
