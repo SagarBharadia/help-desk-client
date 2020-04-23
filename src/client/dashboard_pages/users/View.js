@@ -54,7 +54,6 @@ class View extends Component {
       first_name: [],
       second_name: [],
       email_address: [],
-      role_id: [],
       password: [],
       password_confirmation: [],
     },
@@ -154,7 +153,6 @@ class View extends Component {
               newErrorsState.second_name = errorData.second_name;
             if (errorData.email_address)
               newErrorsState.email_address = errorData.email_address;
-            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
             if (errorData.password)
               newErrorsState.password = errorData.password;
             this.setState({
@@ -227,6 +225,15 @@ class View extends Component {
       password: this.state.password,
       password_confirmation: this.state.password_confirmation,
     };
+    this.setState({
+      errors: {
+        first_name: [],
+        second_name: [],
+        email_address: [],
+        password: [],
+        password_confirmation: [],
+      },
+    });
     axios
       .post(updateUserEndpoint, data, headers)
       .then((res) => {
@@ -250,7 +257,6 @@ class View extends Component {
               newErrorsState.second_name = errorData.second_name;
             if (errorData.email_address)
               newErrorsState.email_address = errorData.email_address;
-            if (errorData.role_id) newErrorsState.role_id = errorData.role_id;
             if (errorData.password)
               newErrorsState.password = errorData.password;
             this.setState({
