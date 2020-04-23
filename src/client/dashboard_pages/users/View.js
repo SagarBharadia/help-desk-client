@@ -182,13 +182,13 @@ class View extends Component {
     axios
       .post(toggleActiveUserEndpoint, data, headers)
       .then((res) => {
-        if (res.status === 204) {
+        if (res.status === 201) {
           const newActiveState = !this.state.active;
           this.setState({
             active: newActiveState,
             pageMessages: [
               {
-                text: "User active toggled",
+                text: res.data.message,
                 severity: "success",
               },
             ],
