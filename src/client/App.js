@@ -7,6 +7,8 @@ import "../css/index.css";
 import Endpoints from "./Endpoints";
 import Axios from "axios";
 
+import { getBaseHeaders } from "./Helpers";
+
 class App extends Component {
   state = {
     authenticated: false,
@@ -26,11 +28,7 @@ class App extends Component {
       const checkTokenEndpoint = Endpoints.get("api", "checkToken", {
         company_subdir: Cookies.get("auth-company-subdir"),
       });
-      const options = {
-        headers: {
-          Authorization: "Bearer " + Cookies.get("token"),
-        },
-      };
+      const options = getBaseHeaders();
       Axios.get(checkTokenEndpoint, options)
         .then((res) => {
           if (res.status === 200) {

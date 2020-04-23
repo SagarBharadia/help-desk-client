@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
 
@@ -50,11 +50,7 @@ class Create extends Component {
   }
 
   getAllPermissionActions() {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const getAllPermissionsEndpoint = Endpoints.get(
       "api",
       "getAllPermissionActions",
@@ -84,11 +80,7 @@ class Create extends Component {
 
   createRole = (e) => {
     e.preventDefault();
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const createRoleEndpoint = Endpoints.get("api", "createRole", {
       company_subdir: this.company_subdir,
     });

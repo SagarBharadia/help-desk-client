@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
 
@@ -90,13 +90,9 @@ class View extends Component {
   };
 
   populateRoles() {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-      params: {
-        forForm: "true",
-      },
+    let headers = getBaseHeaders();
+    headers.params = {
+      forForm: true,
     };
     const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
@@ -131,11 +127,7 @@ class View extends Component {
       company_subdir: this.company_subdir,
       id: this.user_id,
     });
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     axios
       .get(getUserEndpoint, headers)
       .then((res) => {
@@ -182,11 +174,7 @@ class View extends Component {
   }
 
   toggleActive = () => {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const toggleActiveUserEndpoint = Endpoints.get("api", "toggleActiveUser", {
       company_subdir: this.company_subdir,
     });
@@ -226,11 +214,7 @@ class View extends Component {
 
   updateUser = (e) => {
     e.preventDefault();
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const updateUserEndpoint = Endpoints.get("api", "updateUser", {
       company_subdir: this.company_subdir,
     });

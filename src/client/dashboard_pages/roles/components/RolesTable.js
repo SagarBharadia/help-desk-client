@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../../Helpers";
 
 import {
   Table,
@@ -22,19 +22,15 @@ class RolesTable extends Component {
   };
 
   componentDidMount() {
-    const options = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-      params: {
-        forForm: "true",
-      },
+    let headers = getBaseHeaders();
+    headers.params = {
+      forForm: "true",
     };
     const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
     axios
-      .get(getRolesEndpoint, options)
+      .get(getRolesEndpoint, headers)
       .then((res) => {
         this.setState({
           roles: res.data,

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
 
@@ -52,11 +52,7 @@ class View extends Component {
   }
 
   getAllPermissionActions() {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const getAllPermissionsEndpoint = Endpoints.get(
       "api",
       "getAllPermissionActions",
@@ -87,11 +83,7 @@ class View extends Component {
   }
 
   getRole() {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const getRoleEndpoint = Endpoints.get("api", "getSingleRole", {
       company_subdir: this.company_subdir,
       id: this.role_id,
@@ -135,11 +127,7 @@ class View extends Component {
   };
 
   deleteRole = (e) => {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const deleteRoleEndpoint = Endpoints.get("api", "deleteRole", {
       company_subdir: this.company_subdir,
     });
@@ -176,11 +164,7 @@ class View extends Component {
 
   updateRole = (e) => {
     e.preventDefault();
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const updateRoleEndpoint = Endpoints.get("api", "updateRole", {
       company_subdir: this.company_subdir,
     });

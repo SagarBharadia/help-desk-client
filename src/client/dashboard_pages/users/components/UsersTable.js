@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../../Helpers";
 import ErrorIcon from "@material-ui/icons/Error";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
@@ -27,11 +27,7 @@ class UsersTable extends Component {
     const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
       company_subdir: this.company_subdir,
     });
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     axios
       .get(getAllUsersEndpoint, headers)
       .then((res) => res.data)

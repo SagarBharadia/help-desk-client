@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import DashboardWrapper from "../layout/DashboardWrapper";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
 
@@ -66,13 +66,9 @@ class Create extends Component {
   };
 
   populateRoles() {
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-      params: {
-        forForm: "true",
-      },
+    let headers = getBaseHeaders();
+    headers.params = {
+      forForm: true,
     };
     const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
@@ -103,11 +99,7 @@ class Create extends Component {
 
   createUser = (e) => {
     e.preventDefault();
-    const headers = {
-      headers: {
-        Authorization: "Bearer " + Cookies.get("token"),
-      },
-    };
+    const headers = getBaseHeaders();
     const createUserEndpoint = Endpoints.get("api", "createUser", {
       company_subdir: this.company_subdir,
     });
