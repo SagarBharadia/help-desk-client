@@ -95,6 +95,7 @@ class Create extends Component {
         this.setState({
           name: "",
           display_name: "",
+          appliedPermissions: [],
           pageMessages: [
             {
               text: res.data.message,
