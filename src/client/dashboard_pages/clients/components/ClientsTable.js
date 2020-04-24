@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import { getBaseHeaders } from "../../../Helpers";
-import ErrorIcon from "@material-ui/icons/Error";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Table,
@@ -17,22 +15,25 @@ import {
   Button,
 } from "@material-ui/core";
 
-class UsersTable extends Component {
+class ClientsTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
-    users: {},
+    clients: {},
   };
 
   componentDidMount() {
-    const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
+    let headers = getBaseHeaders();
+    headers.params = {
+      forForm: "true",
+    };
+    const getClientsEndpoint = Endpoints.get("api", "getAllClients", {
       company_subdir: this.company_subdir,
     });
-    const headers = getBaseHeaders();
     axios
-      .get(getAllUsersEndpoint, headers)
+      .get(getClientsEndpoint, headers)
       .then((res) => {
         this.setState({
-          users: res.data.data,
+          clients: res.data.data,
         });
       })
       .catch((error) => {
@@ -40,7 +41,7 @@ class UsersTable extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.props.pageErrors,
-              "Unauthorized to read users. Please contact your admin for this permission.",
+              "Unauthorized to view clients. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);
           }
@@ -50,7 +51,7 @@ class UsersTable extends Component {
 
   render() {
     const { company_subdir } = { ...this.props };
-    const { users } = { ...this.state };
+    const { clients } = { ...this.state };
     return (
       <TableContainer component={Paper}>
         <Table aria-label="table containing the users">
@@ -58,38 +59,28 @@ class UsersTable extends Component {
             <TableRow>
               <TableCell>#</TableCell>
               <TableCell align="right">Name</TableCell>
-              <TableCell align="right">Email Address</TableCell>
-              <TableCell align="right">Active</TableCell>
+              <TableCell align="right">Phone Number</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.keys(users).map((key) => {
-              let user = users[key];
+            {Object.keys(clients).map((key) => {
+              let client = clients[key];
               return (
-                <TableRow key={user.id}>
+                <TableRow key={client.id}>
                   <TableCell component="th" scope="row">
-                    {user.id}
+                    {client.id}
                   </TableCell>
-                  <TableCell align="right">
-                    {user.first_name + " " + user.second_name}
-                  </TableCell>
-                  <TableCell align="right">{user.email_address}</TableCell>
-                  <TableCell align="right">
-                    {user.active === 1 ? (
-                      <CheckCircleIcon style={{ color: "#2ecc71" }} />
-                    ) : (
-                      <ErrorIcon style={{ color: "#e74c3c" }} />
-                    )}
-                  </TableCell>
+                  <TableCell align="right">{client.name}</TableCell>
+                  <TableCell align="right">{client.phone_number}</TableCell>
                   <TableCell align="right">
                     <Button
                       component={Link}
                       variant="contained"
                       color="primary"
-                      to={Endpoints.get("client", "viewUser", {
+                      to={Endpoints.get("client", "viewClient", {
                         company_subdir: company_subdir,
-                        id: user.id,
+                        id: client.id,
                       })}
                     >
                       View
@@ -105,4 +96,4 @@ class UsersTable extends Component {
   }
 }
 
-export default UsersTable;
+export default ClientsTable;

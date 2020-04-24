@@ -47,6 +47,8 @@ const Endpoints = {
     viewRole: "/:company_subdir/roles/:id",
 
     clientsArea: "/:company_subdir/clients",
+    createClient: "/:company_subdir/clients/create",
+    viewClient: "/:company_subdir/clients/:id",
 
     callsArea: "/:company_subdir/calls",
 
