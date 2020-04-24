@@ -23,17 +23,15 @@ class RolesTable extends Component {
 
   componentDidMount() {
     let headers = getBaseHeaders();
-    headers.params = {
-      forForm: "true",
-    };
     const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
       company_subdir: this.company_subdir,
     });
     axios
       .get(getRolesEndpoint, headers)
       .then((res) => {
+        console.log(res);
         this.setState({
-          roles: res.data,
+          roles: res.data.data,
         });
       })
       .catch((error) => {

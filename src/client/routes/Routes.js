@@ -21,8 +21,12 @@ import { default as RolesHome } from "../dashboard_pages/roles/Home";
 import { default as RolesCreate } from "../dashboard_pages/roles/Create";
 import { default as RolesView } from "../dashboard_pages/roles/View";
 
+// Importing Client Pages
+import { default as ClientsHome } from "../dashboard_pages/clients/Home";
+
 // Importing error pages
 import Error404 from "../website_pages/error_pages/Error404";
+import Endpoints from "../Endpoints";
 
 class Routes extends React.Component {
   render() {
@@ -32,56 +36,63 @@ class Routes extends React.Component {
           <Route exact path="/" component={Home} />
           <Route
             exact
-            path="/:company_subdir/"
+            path={Endpoints.getRaw("client", "login")}
             render={(props) => <Login {...this.props} {...props} />}
           />
           <Route
             exact
-            path="/:company_subdir/dashboard"
+            path={Endpoints.getRaw("client", "dashboard")}
             render={(props) => (
               <Guarded page={Dashboard} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/users"
+            path={Endpoints.getRaw("client", "usersArea")}
             render={(props) => (
               <Guarded page={UsersHome} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/users/create"
+            path={Endpoints.getRaw("client", "createUser")}
             render={(props) => (
               <Guarded page={UsersCreate} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/users/:user_id"
+            path={Endpoints.getRaw("client", "viewUser")}
             render={(props) => (
               <Guarded page={UsersView} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/roles"
+            path={Endpoints.getRaw("client", "rolesArea")}
             render={(props) => (
               <Guarded page={RolesHome} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/roles/create"
+            path={Endpoints.getRaw("client", "createRole")}
             render={(props) => (
               <Guarded page={RolesCreate} {...this.props} {...props} />
             )}
           />
           <Route
             exact
-            path="/:company_subdir/roles/:id"
+            path={Endpoints.getRaw("client", "viewRole")}
             render={(props) => (
               <Guarded page={RolesView} {...this.props} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path={Endpoints.getRaw("client", "clientsArea")}
+            render={(props) => (
+              <Guarded page={ClientsHome} {...this.props} {...props} />
             )}
           />
           <Route render={(props) => <Error404 {...props} />} />
