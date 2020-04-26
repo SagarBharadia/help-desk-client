@@ -85,7 +85,7 @@ class UsersTable extends Component {
     const { users, prevPageURL, nextPageURL } = { ...this.state };
     return (
       <div>
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} className="standard-margin-bottom">
           <Table aria-label="table containing the users">
             <TableHead>
               <TableRow>
