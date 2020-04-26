@@ -23,6 +23,7 @@ import { default as RolesView } from "../dashboard_pages/roles/View";
 
 // Importing Client Pages
 import { default as ClientsHome } from "../dashboard_pages/clients/Home";
+import { default as ClientsCreate } from "../dashboard_pages/clients/Create";
 
 // Importing error pages
 import Error404 from "../website_pages/error_pages/Error404";
@@ -93,6 +94,13 @@ class Routes extends React.Component {
             path={Endpoints.getRaw("client", "clientsArea")}
             render={(props) => (
               <Guarded page={ClientsHome} {...this.props} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path={Endpoints.getRaw("client", "createClient")}
+            render={(props) => (
+              <Guarded page={ClientsCreate} {...this.props} {...props} />
             )}
           />
           <Route render={(props) => <Error404 {...props} />} />
