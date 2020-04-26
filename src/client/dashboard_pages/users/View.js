@@ -34,7 +34,7 @@ import Messages from "../layout/Messages";
 
 class View extends Component {
   company_subdir = this.props.match.params.company_subdir;
-  user_id = this.props.match.params.user_id;
+  user_id = this.props.match.params.id;
   state = {
     downloadedRoles: [],
     user_id: 0,
