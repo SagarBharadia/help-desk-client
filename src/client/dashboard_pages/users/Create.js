@@ -51,6 +51,20 @@ class Create extends Component {
     pageMessages: [],
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        first_name: [],
+        second_name: [],
+        email_address: [],
+        password: [],
+        password_confirmation: [],
+      },
+    });
+  };
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -110,15 +124,7 @@ class Create extends Component {
       password: this.state.password,
       password_confirmation: this.state.password_confirmation,
     };
-    this.setState({
-      errors: {
-        first_name: [],
-        second_name: [],
-        email_address: [],
-        password: [],
-        password_confirmation: [],
-      },
-    });
+    this.resetErrors();
     axios
       .post(createUserEndpoint, data, headers)
       .then((res) => {

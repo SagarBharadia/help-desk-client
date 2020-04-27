@@ -88,6 +88,20 @@ class View extends Component {
     }
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        first_name: [],
+        second_name: [],
+        email_address: [],
+        password: [],
+        password_confirmation: [],
+      },
+    });
+  };
+
   populateRoles() {
     let headers = getBaseHeaders();
     headers.params = {
@@ -179,6 +193,7 @@ class View extends Component {
     const data = {
       user_id: this.state.user_id,
     };
+    this.resetErrors();
     axios
       .post(toggleActiveUserEndpoint, data, headers)
       .then((res) => {
@@ -223,15 +238,7 @@ class View extends Component {
       password: this.state.password,
       password_confirmation: this.state.password_confirmation,
     };
-    this.setState({
-      errors: {
-        first_name: [],
-        second_name: [],
-        email_address: [],
-        password: [],
-        password_confirmation: [],
-      },
-    });
+    this.resetErrors();
     axios
       .post(updateUserEndpoint, data, headers)
       .then((res) => {
