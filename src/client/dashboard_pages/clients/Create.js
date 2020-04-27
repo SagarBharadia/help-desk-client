@@ -35,6 +35,18 @@ class Create extends Component {
     pageErrors: [],
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        name: [],
+        email_address: [],
+        phone_number: [],
+      },
+    });
+  };
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -52,13 +64,7 @@ class Create extends Component {
       email_address: this.state.email_address,
       phone_number: this.state.phone_number,
     };
-    this.setState({
-      errors: {
-        name: [],
-        email_address: [],
-        phone_number: [],
-      },
-    });
+    this.resetErrors();
     axios
       .post(createClientEndpoint, data, headers)
       .then((res) => {

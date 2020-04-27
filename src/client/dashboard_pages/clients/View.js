@@ -36,6 +36,18 @@ class View extends Component {
     pageErrors: [],
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        name: [],
+        email_address: [],
+        phone_number: [],
+      },
+    });
+  };
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -92,13 +104,7 @@ class View extends Component {
       email_address: this.state.email_address,
       phone_number: this.state.phone_number,
     };
-    this.setState({
-      errors: {
-        name: [],
-        email_address: [],
-        phone_number: [],
-      },
-    });
+    this.resetErrors();
     axios
       .post(updateClientEndpoint, data, headers)
       .then((res) => {
