@@ -153,6 +153,9 @@ class View extends Component {
             email_address: user.email_address,
             role: user.role_id,
             active: user.active,
+            roleOnShow: this.state.downloadedRoles.find(
+              (role) => role.id === user.role_id
+            ),
           });
         }
       })
