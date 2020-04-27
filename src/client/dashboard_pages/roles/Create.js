@@ -39,6 +39,17 @@ class Create extends Component {
     pageErrors: [],
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        name: [],
+        display_name: [],
+      },
+    });
+  };
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -89,6 +100,7 @@ class Create extends Component {
       display_name: this.state.display_name,
       appliedPermissions: this.state.appliedPermissions,
     };
+    this.resetErrors();
     axios
       .post(createRoleEndpoint, data, headers)
       .then((res) => {

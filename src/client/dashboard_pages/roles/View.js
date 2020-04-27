@@ -40,6 +40,17 @@ class View extends Component {
     redirectToDashboard: false,
   };
 
+  resetErrors = () => {
+    this.setState({
+      pageErrors: [],
+      pageMessages: [],
+      errors: {
+        name: [],
+        display_name: [],
+      },
+    });
+  };
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,
@@ -134,6 +145,7 @@ class View extends Component {
     const data = {
       role_id: this.role_id,
     };
+    this.resetErrors();
     axios
       .post(deleteRoleEndpoint, data, headers)
       .then((res) => {
@@ -182,6 +194,7 @@ class View extends Component {
       display_name: this.state.display_name,
       appliedPermissions: this.state.appliedPermissions,
     };
+    this.resetErrors();
     axios
       .post(updateRoleEndpoint, data, headers)
       .then((res) => {
