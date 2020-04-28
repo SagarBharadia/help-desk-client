@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import { getBaseHeaders } from "../../../Helpers";
+import ErrorIcon from "@material-ui/icons/Error";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Table,
@@ -16,25 +18,24 @@ import {
   Box,
 } from "@material-ui/core";
 
-class RolesTable extends Component {
+class CallsTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
-    roles: {},
+    calls: {},
     prevPageURL: null,
     nextPageURL: null,
   };
 
   componentDidMount() {
-    let headers = getBaseHeaders();
-    const getRolesEndpoint = Endpoints.get("api", "getAllRoles", {
+    const getAllCallsEndpoint = Endpoints.get("api", "getAllCalls", {
       company_subdir: this.company_subdir,
     });
+    const headers = getBaseHeaders();
     axios
-      .get(getRolesEndpoint, headers)
+      .get(getAllCallsEndpoint, headers)
       .then((res) => {
-        console.log(res);
         this.setState({
-          roles: res.data.data,
+          calls: res.data.data,
           nextPageURL: res.data.next_page_url,
           prevPageURL: res.data.prev_page_url,
         });
@@ -44,7 +45,7 @@ class RolesTable extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.props.pageErrors,
-              "Unauthorized to view roles. Please contact your admin for this permission.",
+              "Unauthorized to read calls. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);
           }
@@ -52,7 +53,7 @@ class RolesTable extends Component {
       });
   }
 
-  loadNewRoles = (direction) => {
+  loadNewCalls = (direction) => {
     let headers = getBaseHeaders();
     let endpoint = this.state.nextPageURL;
     if (direction === "previous") {
@@ -61,7 +62,6 @@ class RolesTable extends Component {
     axios
       .get(endpoint, headers)
       .then((res) => {
-        console.log(res.data);
         this.setState({
           clients: res.data.data,
           nextPageURL: res.data.next_page_url,
@@ -73,7 +73,7 @@ class RolesTable extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.props.pageErrors,
-              "Unauthorized to view roles. Please contact your admin for this permission.",
+              "Unauthorized to view calls. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);
           }
@@ -83,37 +83,45 @@ class RolesTable extends Component {
 
   render() {
     const { company_subdir } = { ...this.props };
-    const { roles, prevPageURL, nextPageURL } = { ...this.state };
+    const { calls, prevPageURL, nextPageURL } = { ...this.state };
     return (
       <div>
         <TableContainer component={Paper} className="standard-margin-bottom">
-          <Table aria-label="table containing the roles">
+          <Table aria-label="table containing the calls">
             <TableHead>
               <TableRow>
                 <TableCell>#</TableCell>
                 <TableCell align="right">Name</TableCell>
-                <TableCell align="right">Display Name</TableCell>
+                <TableCell align="right">Client</TableCell>
+                <TableCell align="right">Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.keys(roles).map((key) => {
-                let role = roles[key];
+              {Object.keys(calls).map((key) => {
+                let call = calls[key];
                 return (
-                  <TableRow key={role.id}>
+                  <TableRow key={call.id}>
                     <TableCell component="th" scope="row">
-                      {role.id}
+                      {call.id}
                     </TableCell>
-                    <TableCell align="right">{role.name}</TableCell>
-                    <TableCell align="right">{role.display_name}</TableCell>
+                    <TableCell align="right">{call.name}</TableCell>
+                    <TableCell align="right">{call.client.name}</TableCell>
+                    <TableCell align="right">
+                      {call.resolved === 1 ? (
+                        <CheckCircleIcon style={{ color: "#2ecc71" }} />
+                      ) : (
+                        <ErrorIcon style={{ color: "#e74c3c" }} />
+                      )}
+                    </TableCell>
                     <TableCell align="right">
                       <Button
                         component={Link}
                         variant="contained"
                         color="primary"
-                        to={Endpoints.get("client", "viewRole", {
+                        to={Endpoints.get("client", "viewCall", {
                           company_subdir: company_subdir,
-                          id: role.id,
+                          id: call.id,
                         })}
                       >
                         View
@@ -135,7 +143,7 @@ class RolesTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewRoles("previous")}
+            onClick={this.loadNewCalls("previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -143,7 +151,7 @@ class RolesTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewRoles("next")}
+            onClick={this.loadNewCalls("next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page
@@ -154,4 +162,4 @@ class RolesTable extends Component {
   }
 }
 
-export default RolesTable;
+export default CallsTable;

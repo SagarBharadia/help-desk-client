@@ -86,7 +86,7 @@ class ClientsTable extends Component {
     return (
       <div>
         <TableContainer component={Paper} className="standard-margin-bottom">
-          <Table aria-label="table containing the users">
+          <Table aria-label="table containing the clients">
             <TableHead>
               <TableRow>
                 <TableCell>#</TableCell>

@@ -36,6 +36,8 @@ class UsersTable extends Component {
       .then((res) => {
         this.setState({
           users: res.data.data,
+          nextPageURL: res.data.next_page_url,
+          prevPageURL: res.data.prev_page_url,
         });
       })
       .catch((error) => {
@@ -60,7 +62,6 @@ class UsersTable extends Component {
     axios
       .get(endpoint, headers)
       .then((res) => {
-        console.log(res.data);
         this.setState({
           clients: res.data.data,
           nextPageURL: res.data.next_page_url,

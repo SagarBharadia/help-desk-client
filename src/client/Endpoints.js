@@ -30,7 +30,7 @@ const Endpoints = {
     createCall: ":company_subdir/api/calls/create",
     updateCall: ":company_subdir/api/calls/update",
     deleteCall: ":company_subdir/api/calls/delete",
-    getAllCall: ":company_subdir/api/calls/get/all",
+    getAllCalls: ":company_subdir/api/calls/get/all",
     getSingleCall: ":company_subdir/api/calls/get/:id",
   },
 
@@ -51,6 +51,8 @@ const Endpoints = {
     viewClient: "/:company_subdir/clients/:id",
 
     callsArea: "/:company_subdir/calls",
+    createCall: "/:company_subdir/calls/create",
+    viewCall: "/:company_subdir/calls/:id",
 
     reportsArea: "/:company_subdir/reports",
   },
