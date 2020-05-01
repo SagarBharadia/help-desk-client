@@ -61,7 +61,6 @@ class RolesTable extends Component {
     axios
       .get(endpoint, headers)
       .then((res) => {
-        console.log(res.data);
         this.setState({
           clients: res.data.data,
           nextPageURL: res.data.next_page_url,
