@@ -47,7 +47,7 @@ class Home extends Component {
             >
               Home
             </MuiLink>
-            <Typography color="textPrimary">Users</Typography>
+            <Typography color="textPrimary">Calls</Typography>
           </Breadcrumbs>
           <Box
             display="flex"
@@ -63,7 +63,7 @@ class Home extends Component {
               variant="contained"
               color="primary"
               style={{ marginLeft: "20px" }}
-              to={Endpoints.get("client", "createClient", {
+              to={Endpoints.get("client", "createCall", {
                 company_subdir: company_subdir,
               })}
             >
