@@ -12,12 +12,10 @@
 }
 
 /*
- * Bigger than XS breakpoint (600px)
+ * Bigger than XS breakpoint (0px)
  */
-@media screen and (min-width: 0px) {
-  .xs-full-width {
-    width: 100%;
-  }
+.xs-full-width {
+  width: 100%;
 }
 
 /*
@@ -41,6 +39,12 @@
   }
   .md-half-width {
     width: calc(50% - 20px);
+  }
+  .md-quarter-width {
+    width: calc(25% - 20px);
+  }
+  .md-three-quarter-width {
+    width: calc(75% - 20px);
   }
 }
 

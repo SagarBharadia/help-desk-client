@@ -205,7 +205,11 @@ class Create extends Component {
                 flexDirection="column"
                 className="xs-full-width md-half-width standard-margin-bottom"
               >
-                <Typography component="h3" variant="h5">
+                <Typography
+                  className="standard-margin-bottom"
+                  component="h3"
+                  variant="h5"
+                >
                   Role Details
                 </Typography>
                 {errors.name.map((error, index) => (

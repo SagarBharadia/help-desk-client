@@ -235,7 +235,11 @@ class Create extends Component {
               className="xs-full-width md-half-width standard-margin-bottom"
             >
               <form className="xs-full-width" onSubmit={this.createUser}>
-                <Typography component="h3" variant="h5">
+                <Typography
+                  className="standard-margin-bottom"
+                  component="h3"
+                  variant="h5"
+                >
                   User Details
                 </Typography>
                 {errors.first_name.map((error, index) => (
