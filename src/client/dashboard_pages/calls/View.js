@@ -4,7 +4,7 @@ import axios from "axios";
 import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import {
   Box,
@@ -87,6 +87,7 @@ class View extends Component {
     pageErrors: [],
     created_at: "",
     updated_at: "",
+    redirectToHome: false,
   };
 
   resetErrors = () => {
@@ -164,6 +165,12 @@ class View extends Component {
             const pageErrors = [
               ...this.state.pageErrors,
               "Unauthorized to create calls. Please contact your admin for this permission.",
+            ];
+            this.setState({ pageErrors: pageErrors });
+          } else if (error.response.status === 404) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
             ];
             this.setState({ pageErrors: pageErrors });
           }
@@ -344,6 +351,49 @@ class View extends Component {
     return bgColor;
   };
 
+  deleteCall = () => {
+    let headers = getBaseHeaders();
+    const deletePostEndpoint = Endpoints.get("api", "deleteCall", {
+      company_subdir: this.company_subdir,
+    });
+    const data = {
+      call_id: this.call_id,
+    };
+    axios
+      .post(deletePostEndpoint, data, headers)
+      .then((res) => {
+        this.setState({
+          pageMessages: [
+            {
+              text: res.data.message,
+              severity: "success",
+            },
+          ],
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          } else if (error.response.status === 500) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          }
+        }
+      });
+  };
+
   render() {
     const company_subdir = this.company_subdir;
     const {
@@ -366,6 +416,7 @@ class View extends Component {
       updates,
       created_at,
       updated_at,
+      redirectToHome,
     } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
@@ -565,15 +616,32 @@ class View extends Component {
             >
               {name}
             </Typography>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              className="xs-full-width md-quarter-width standard-margin-bottom"
-              onClick={this.toggleUpdateModal}
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              flexWrap="wrap"
+              className="md-quarter-width xs-full-width standard-margin-bottom"
             >
-              Update
-            </Button>
+              <Button
+                type="button"
+                variant="contained"
+                color="primary"
+                className="xs-full-width md-half-width"
+                onClick={this.toggleUpdateModal}
+              >
+                Update
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                color="secondary"
+                className="xs-full-width md-half-width"
+                onClick={this.deleteCall}
+              >
+                Delete
+              </Button>
+            </Box>
           </Box>
           <Messages pageErrors={pageErrors} pageMessages={pageMessages} />
           <Box
@@ -735,6 +803,17 @@ class View extends Component {
               })}
             </ExpansionPanelDetails>
           </ExpansionPanel>
+          {redirectToHome ? (
+            <Redirect
+              to={
+                Endpoints.get("client", "callsArea", {
+                  company_subdir: this.company_subdir,
+                }) + "?delete=success"
+              }
+            />
+          ) : (
+            ""
+          )}
         </main>
       </DashboardWrapper>
     );

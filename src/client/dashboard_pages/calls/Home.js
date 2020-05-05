@@ -28,6 +28,18 @@ class Home extends Component {
     });
   };
 
+  componentDidMount() {
+    const getParams = new URLSearchParams(this.props.location.search);
+
+    if (getParams.get("deleted") === "success") {
+      const pageMessages = [
+        ...this.state.pageMessages,
+        { severity: "success", text: "Deleted call successfully." },
+      ];
+      this.setState({ pageMessages: pageMessages });
+    }
+  }
+
   render() {
     const { company_subdir } = { ...this.props.match.params };
     const { pageErrors, pageMessages } = { ...this.state };
