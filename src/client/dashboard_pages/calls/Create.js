@@ -33,11 +33,8 @@ class Create extends Component {
     tagInput: "",
     client: "",
     errors: {
-      name: [],
-      caller_name: [],
       details: [],
       tags: [],
-      client: [],
     },
     pageMessages: [],
     pageErrors: [],
@@ -160,12 +157,15 @@ class Create extends Component {
 
   addTag = () => {
     if (this.state.tagInput) {
-      const trimmedInput = this.state.tagInput.trim();
+      const trimmedInput = this.state.tagInput.trim().toLowerCase();
       if (!this.state.tags.includes(trimmedInput)) {
         const tags = [...this.state.tags, trimmedInput];
+        let newErrorsState = this.state.errors;
+        newErrorsState.tags = [];
         this.setState({
           tags: tags,
           tagInput: "",
+          errors: newErrorsState,
         });
       } else {
         let errorsState = this.state.errors;
@@ -401,6 +401,8 @@ class Create extends Component {
                     justifyContent: "center",
                     listStyle: "none",
                     paddingLeft: 0,
+                    maxHeight: "325px",
+                    overflowY: "auto",
                   }}
                 >
                   {this.state.tags.length === 0 ? (

@@ -63,7 +63,7 @@ class CallsTable extends Component {
       .get(endpoint, headers)
       .then((res) => {
         this.setState({
-          clients: res.data.data,
+          calls: res.data.data,
           nextPageURL: res.data.next_page_url,
           prevPageURL: res.data.prev_page_url,
         });
@@ -143,7 +143,7 @@ class CallsTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewCalls("previous")}
+            onClick={this.loadNewCalls.bind(this, "previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -151,7 +151,7 @@ class CallsTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewCalls("next")}
+            onClick={this.loadNewCalls.bind(this, "next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page

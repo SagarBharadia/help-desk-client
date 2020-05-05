@@ -5,10 +5,21 @@
 
 #root {
   min-height: 100vh;
+  padding-bottom: 20px;
 }
 
 .standard-margin-bottom {
   margin-bottom: 20px !important;
+}
+
+.clearfix {
+  clear: both;
+}
+.float-left {
+  float: left;
+}
+.float-right {
+  float: right;
 }
 
 /*
