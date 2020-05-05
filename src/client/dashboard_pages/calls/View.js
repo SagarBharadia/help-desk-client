@@ -334,8 +334,12 @@ class View extends Component {
     switch (tabKey) {
       case "details":
         if (this.state.errors.updateDetails.length > 0) bgColor = errorColor;
+        break;
       case "tags":
         if (this.state.errors.tags.length > 0) bgColor = errorColor;
+        break;
+      default:
+        break;
     }
     return bgColor;
   };
