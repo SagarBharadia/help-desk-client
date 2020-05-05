@@ -33,8 +33,11 @@ class Create extends Component {
     tagInput: "",
     client: "",
     errors: {
+      name: [],
+      caller_name: [],
       details: [],
       tags: [],
+      client: [],
     },
     pageMessages: [],
     pageErrors: [],

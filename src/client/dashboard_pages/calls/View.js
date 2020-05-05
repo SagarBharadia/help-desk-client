@@ -85,6 +85,8 @@ class View extends Component {
     },
     pageMessages: [],
     pageErrors: [],
+    created_at: "",
+    updated_at: "",
   };
 
   resetErrors = () => {
@@ -147,6 +149,8 @@ class View extends Component {
             return update2CreatedTime.getTime() - update1CreatedTime.getTime();
           }),
           resolved: res.data.call.resolved === 0 ? false : true,
+          created_at: res.data.call.created_at,
+          updated_at: res.data.call.updated_at,
         };
         if (res.data.call.current_analyst !== null) {
           newStateData.currentAnalyst = res.data.call.current_analyst;
@@ -324,6 +328,18 @@ class View extends Component {
     );
   };
 
+  getTabBackground = (tabKey) => {
+    let bgColor = "inherit";
+    const errorColor = "#ff7979";
+    switch (tabKey) {
+      case "details":
+        if (this.state.errors.updateDetails.length > 0) bgColor = errorColor;
+      case "tags":
+        if (this.state.errors.tags.length > 0) bgColor = errorColor;
+    }
+    return bgColor;
+  };
+
   render() {
     const company_subdir = this.company_subdir;
     const {
@@ -344,6 +360,8 @@ class View extends Component {
       resolved,
       downloadedAnalysts,
       updates,
+      created_at,
+      updated_at,
     } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
@@ -397,8 +415,16 @@ class View extends Component {
                 onChange={this.handleUpdateModalTabSwitch}
                 centered
               >
-                <Tab value={0} label="Details" />
-                <Tab value={1} label="Tags" />
+                <Tab
+                  style={{ backgroundColor: this.getTabBackground("details") }}
+                  value={0}
+                  label="Details"
+                />
+                <Tab
+                  style={{ backgroundColor: this.getTabBackground("tags") }}
+                  value={1}
+                  label="Tags"
+                />
                 <Tab value={2} label="Settings" />
               </Tabs>
               <form onSubmit={this.updateCall}>
@@ -600,6 +626,20 @@ class View extends Component {
                   </Typography>
                 )}
               </Box>
+              <Box className="xs-full-width sm-half-width standard-margin-bottom">
+                <Typography component="h3" variant="h6">
+                  Created At
+                </Typography>
+                <Divider />
+                <Typography component="p">{created_at}</Typography>
+              </Box>
+              <Box className="xs-full-width sm-half-width standard-margin-bottom">
+                <Typography component="h3" variant="h6">
+                  Updated At
+                </Typography>
+                <Divider />
+                <Typography component="p">{updated_at}</Typography>
+              </Box>
             </Box>
             <Box className="xs-full-width standard-margin-bottom">
               <Typography component="h3" variant="h6">
@@ -686,9 +726,8 @@ class View extends Component {
               }}
             >
               {updates.map((update, index) => {
-                if (index !== 0) {
-                  return this.generateCallHistory(update, index);
-                }
+                if (index === 0) return "";
+                return this.generateCallHistory(update, index);
               })}
             </ExpansionPanelDetails>
           </ExpansionPanel>
