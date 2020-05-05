@@ -24,7 +24,12 @@ import {
   FormLabel,
   Select,
   MenuItem,
+  ExpansionPanel,
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
 } from "@material-ui/core";
+
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 import { Alert } from "@material-ui/lab";
 
@@ -100,13 +105,15 @@ class View extends Component {
   };
 
   changeCurrentAnalyst = (e) => {
-    const newCurrentAnalyst = this.state.downloadedAnalysts.find(
-      (analyst) => analyst.id === e.target.value
-    );
-    if (typeof newCurrentAnalyst !== undefined) {
-      this.setState({
-        currentAnalyst: newCurrentAnalyst,
-      });
+    if (e.target.value !== "") {
+      const newCurrentAnalyst = this.state.downloadedAnalysts.find(
+        (analyst) => analyst.id === e.target.value
+      );
+      if (typeof newCurrentAnalyst !== undefined) {
+        this.setState({
+          currentAnalyst: newCurrentAnalyst,
+        });
+      }
     }
   };
 
@@ -133,31 +140,23 @@ class View extends Component {
           client: res.data.call.client,
           tags: res.data.call.tags,
           receiver: res.data.call.receiver,
-          updates: res.data.call.updates,
+          updates: res.data.call.updates.sort((update1, update2) => {
+            const update1CreatedTime = new Date(update1.created_at);
+            const update2CreatedTime = new Date(update2.created_at);
+
+            return update2CreatedTime.getTime() - update1CreatedTime.getTime();
+          }),
           resolved: res.data.call.resolved === 0 ? false : true,
         };
         if (res.data.call.current_analyst !== null) {
-          newStateData.current_analyst = res.data.call.current_analyst;
+          newStateData.currentAnalyst = res.data.call.current_analyst;
         }
         return newStateData;
       })
       .then((newStateData) => this.setState(newStateData))
       .catch((error) => {
         if (error.response) {
-          if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
-            const errorData = error.response.data;
-            if (errorData.name) newErrorsState.name = errorData.name;
-            if (errorData.caller_name)
-              newErrorsState.caller_name = errorData.caller_name;
-            if (errorData.details) newErrorsState.details = errorData.details;
-            if (errorData.client_id)
-              newErrorsState.client = errorData.client_id;
-            if (errorData.tags) newErrorsState.tags = errorData.tags;
-            this.setState({
-              errors: newErrorsState,
-            });
-          } else if (error.response.status === 401) {
+          if (error.response.status === 401) {
             const pageErrors = [
               ...this.state.pageErrors,
               "Unauthorized to create calls. Please contact your admin for this permission.",
@@ -178,7 +177,7 @@ class View extends Component {
       call_id: this.call_id,
       details: this.state.updateDetails,
       tags: this.state.tags,
-      currentAnalyst: this.state.currentAnalyst.id,
+      current_analyst_id: this.state.currentAnalyst.id,
     };
     this.resetErrors();
     axios
@@ -215,6 +214,12 @@ class View extends Component {
               "Unauthorized to update calls. Please contact your admin for this permission.",
             ];
             this.setState({ pageErrors: pageErrors });
+          } else if (error.response.status === 403) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({ pageErrors: pageErrors, updateModalOpen: false });
           }
         }
       });
@@ -303,6 +308,22 @@ class View extends Component {
     });
   };
 
+  generateCallHistory = (update, key) => {
+    return (
+      <Box
+        className="xs-full-width standard-margin-bottom"
+        key={"callHistory-" + key}
+      >
+        <Typography component="p" variant="subtitle1" style={{ color: "#555" }}>
+          Update Posted: {update.created_at}
+        </Typography>
+        <Typography component="p" variant="h6">
+          {update.details}
+        </Typography>
+      </Box>
+    );
+  };
+
   render() {
     const company_subdir = this.company_subdir;
     const {
@@ -322,6 +343,7 @@ class View extends Component {
       tagInput,
       resolved,
       downloadedAnalysts,
+      updates,
     } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
@@ -587,16 +609,24 @@ class View extends Component {
               <Typography component="p">{details}</Typography>
             </Box>
           </Box>
-          <Box display="block">
+          <Box display="block" className="standard-margin-bottom">
             <Box className="xs-full-width md-half-width standard-margin-bottom float-left">
               <Typography component="h3" variant="h6">
                 Latest Update
               </Typography>
               <Divider />
-              <Typography component="p">
-                TODO: Sort updates desc and show the latest update details here,
-                else show no updates yet.
-              </Typography>
+              {updates.length === 0 ? (
+                <Alert variant="filled" severity="info">
+                  There are no updates to report.
+                </Alert>
+              ) : (
+                <div>
+                  <Typography>{updates[0].details}</Typography>
+                  <Typography style={{ color: "#555" }}>
+                    Update At: {updates[0].created_at}
+                  </Typography>
+                </div>
+              )}
             </Box>
             <Box
               display="flex"
@@ -639,6 +669,29 @@ class View extends Component {
             </Box>
             <div className="clearfix"></div>
           </Box>
+          <ExpansionPanel disabled={updates.length < 1}>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="call-history-header"
+            >
+              <Typography variant="h6" component="h3">
+                Call History
+              </Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              {updates.map((update, index) => {
+                if (index !== 0) {
+                  return this.generateCallHistory(update, index);
+                }
+              })}
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
         </main>
       </DashboardWrapper>
     );
