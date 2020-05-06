@@ -48,6 +48,9 @@
   .md-third-width {
     width: calc(33% - 20px);
   }
+  .md-fifth-width {
+    width: calc(20% - 20px);
+  }
   .md-half-width {
     width: calc(50% - 20px);
   }
