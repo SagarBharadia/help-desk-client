@@ -136,6 +136,8 @@ class View extends Component {
     axios
       .get(getCallEndpoint, headers)
       .then((res) => {
+        const prevCurrentAnalyst = this.state.currentAnalyst;
+        const prevDownloadedAnalysts = this.state.downloadedAnalysts;
         let newStateData = {
           name: res.data.call.name,
           caller_name: res.data.call.caller_name,
@@ -152,10 +154,14 @@ class View extends Component {
           resolved: res.data.call.resolved === 0 ? false : true,
           created_at: res.data.call.created_at,
           updated_at: res.data.call.updated_at,
+          currentAnalyst:
+            res.data.call.current_analyst !== null
+              ? res.data.call.current_analyst
+              : prevCurrentAnalyst,
+          downloadedAnalysts: !prevDownloadedAnalysts.length
+            ? [res.data.call.current_analyst]
+            : prevDownloadedAnalysts,
         };
-        if (res.data.call.current_analyst !== null) {
-          newStateData.currentAnalyst = res.data.call.current_analyst;
-        }
         return newStateData;
       })
       .then((newStateData) => this.setState(newStateData))
@@ -164,7 +170,7 @@ class View extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.state.pageErrors,
-              "Unauthorized to create calls. Please contact your admin for this permission.",
+              "Unauthorized to read calls. Please contact your admin for this permission.",
             ];
             this.setState({ pageErrors: pageErrors });
           } else if (error.response.status === 404) {
@@ -294,19 +300,7 @@ class View extends Component {
           downloadedAnalysts: res.data,
         });
       })
-      .catch((error) => {
-        if (error.response) {
-          if (error.response.status === 401) {
-            const pageErrors = [
-              ...this.state.pageErrors,
-              "Unauthorized to read clients. Please contact your admin for this permission",
-            ];
-            this.setState({
-              pageErrors: pageErrors,
-            });
-          }
-        }
-      });
+      .catch((error) => null);
   };
 
   componentDidMount() {
@@ -586,12 +580,12 @@ class View extends Component {
                     displayEmpty
                     required
                   >
-                    <MenuItem value={0}>None Assigned</MenuItem>
+                    <MenuItem value="">None Assigned</MenuItem>
                     <Divider />
-                    {downloadedAnalysts.map((user) => {
+                    {downloadedAnalysts.map((analyst) => {
                       return (
-                        <MenuItem key={"user-" + user.id} value={user.id}>
-                          {user.first_name}
+                        <MenuItem key={"user-" + analyst.id} value={analyst.id}>
+                          {analyst.first_name}
                         </MenuItem>
                       );
                     })}
