@@ -189,6 +189,7 @@ class View extends Component {
       details: this.state.updateDetails,
       tags: this.state.tags,
       current_analyst_id: this.state.currentAnalyst.id,
+      resolved: this.state.resolved,
     };
     this.resetErrors();
     axios
@@ -494,7 +495,7 @@ class View extends Component {
                     className="xs-full-width standard-margin-bottom"
                     error={errors.updateDetails.length > 0 ? true : false}
                     rowsMax={Infinity}
-                    // required
+                    required
                   />
                   <FormControlLabel
                     control={
@@ -621,13 +622,13 @@ class View extends Component {
               flexDirection="row"
               justifyContent="space-between"
               flexWrap="wrap"
-              className="md-quarter-width xs-full-width standard-margin-bottom"
+              className="md-quarter-width xs-full-width"
             >
               <Button
                 type="button"
                 variant="contained"
                 color="primary"
-                className="xs-full-width md-half-width"
+                className="xs-full-width md-half-width standard-margin-bottom"
                 onClick={this.toggleUpdateModal}
               >
                 Update
@@ -636,7 +637,7 @@ class View extends Component {
                 type="button"
                 variant="contained"
                 color="secondary"
-                className="xs-full-width md-half-width"
+                className="xs-full-width md-half-width standard-margin-bottom"
                 onClick={this.deleteCall}
               >
                 Delete
@@ -781,7 +782,7 @@ class View extends Component {
             </Box>
             <div className="clearfix"></div>
           </Box>
-          <ExpansionPanel disabled={updates.length < 1}>
+          <ExpansionPanel disabled={updates.length <= 1}>
             <ExpansionPanelSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="call-history-header"
