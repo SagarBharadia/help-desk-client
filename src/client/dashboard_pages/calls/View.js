@@ -289,6 +289,7 @@ class View extends Component {
     let headers = getBaseHeaders();
     headers.params = {
       forForm: "true",
+      filterPerm: "update-call",
     };
     const getUsersEndpoint = Endpoints.get("api", "getAllUsers", {
       company_subdir: this.company_subdir,
