@@ -16,6 +16,8 @@ import { Link } from "react-router-dom";
 
 import Endpoints from "../../Endpoints";
 
+import Cookies from "js-cookie";
+
 class DashboardAppBar extends Component {
   company_subdir = this.props.company_subdir;
   state = {
@@ -91,6 +93,8 @@ class DashboardAppBar extends Component {
   };
 
   render() {
+    const user_name = Cookies.get("user-name");
+    const company_name = Cookies.get("auth-company-name");
     return (
       <AppBar position="sticky" style={{ marginBottom: "40px" }}>
         <Container>
@@ -109,10 +113,10 @@ class DashboardAppBar extends Component {
               color="inherit"
               style={{ flex: 1 }}
             >
-              {this.props.company_subdir}
+              {company_name}
             </Typography>
             <Typography variant="h6" component="span" color="inherit">
-              John Doe
+              {user_name}
             </Typography>
           </Toolbar>
         </Container>

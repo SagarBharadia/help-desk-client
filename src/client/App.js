@@ -23,7 +23,9 @@ class App extends Component {
     if (
       Cookies.get("token") &&
       Cookies.get("token-type") &&
-      Cookies.get("auth-company-subdir")
+      Cookies.get("auth-company-subdir") &&
+      Cookies.get("auth-company-name") &&
+      Cookies.get("user-name")
     ) {
       const checkTokenEndpoint = Endpoints.get("api", "checkToken", {
         company_subdir: Cookies.get("auth-company-subdir"),
@@ -39,6 +41,8 @@ class App extends Component {
           Cookies.remove("token");
           Cookies.remove("token-type");
           Cookies.remove("auth-company-subdir");
+          Cookies.remove("auth-company-name");
+          Cookies.remove("user-name");
           this.setState({ loaded: true });
         });
     } else {

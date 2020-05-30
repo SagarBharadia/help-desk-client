@@ -46,6 +46,12 @@ class Login extends Component {
         Cookies.set("auth-company-subdir", res.data.company_subdir, {
           expires: res.data.expires_in / 1440,
         });
+        Cookies.set("auth-company-name", res.data.company_name, {
+          expires: res.data.expires_in / 1440,
+        });
+        Cookies.set("user-name", res.data.user_name, {
+          expires: res.data.expires_in / 1440,
+        });
         this.setState({
           response: {
             status: res.status,
