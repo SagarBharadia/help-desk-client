@@ -18,7 +18,7 @@ class DashboardWrapper extends Component {
 }
 
 DashboardWrapper.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.element.isRequired,
 };
 
 export default DashboardWrapper;

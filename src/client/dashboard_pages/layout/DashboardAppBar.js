@@ -11,8 +11,9 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
+import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import Endpoints from "../../Endpoints";
 
@@ -22,6 +23,7 @@ class DashboardAppBar extends Component {
   company_subdir = this.props.company_subdir;
   state = {
     drawerOpen: false,
+    redirectLogOff: false,
   };
 
   drawerNavListItems = [
@@ -97,11 +99,26 @@ class DashboardAppBar extends Component {
     );
   };
 
+  logOff = () => {
+    Cookies.remove("token");
+    Cookies.remove("token-type");
+    Cookies.remove("auth-company-subdir");
+    Cookies.remove("auth-company-name");
+    Cookies.remove("user-name");
+    this.setState({
+      redirectLogOff: true,
+    });
+  };
+
   render() {
+    const { redirectLogOff } = { ...this.state };
     const user_name = Cookies.get("user-name");
     const company_name = Cookies.get("auth-company-name");
     return (
       <AppBar position="sticky" style={{ marginBottom: "40px" }}>
+        {redirectLogOff ? (
+          <Redirect to={Endpoints.get("client", "home", {})} />
+        ) : null}
         <Container>
           <Toolbar disableGutters>
             <IconButton
@@ -123,6 +140,15 @@ class DashboardAppBar extends Component {
             <Typography variant="h6" component="span" color="inherit">
               {user_name}
             </Typography>
+            <IconButton
+              onClick={this.logOff}
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              style={{ marginLeft: "0px" }}
+            >
+              <PowerSettingsNewIcon />
+            </IconButton>
           </Toolbar>
         </Container>
         <Drawer

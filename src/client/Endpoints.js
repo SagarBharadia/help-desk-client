@@ -39,6 +39,7 @@ const Endpoints = {
   },
 
   client: {
+    home: "/",
     login: "/:company_subdir/",
     dashboard: "/:company_subdir/dashboard",
 
@@ -66,8 +67,6 @@ const Endpoints = {
     type = type.toLowerCase();
     if (typeof data !== "object")
       throw new Error("Data is a non-object when object is required.");
-    if (typeof data.company_subdir === "undefined")
-      throw new Error("company_subdir was not defined in data.");
     if (typeof type !== "string") throw new Error("Type must be string");
     if (!this.allowedTypes.includes(type))
       throw new Error("Type must be in " + this.allowedTypes.toString());
