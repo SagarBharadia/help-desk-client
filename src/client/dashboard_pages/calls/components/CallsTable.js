@@ -171,7 +171,7 @@ class CallsTable extends Component {
             displayEmpty
           >
             <MenuItem key={0} value="">
-              Resolved
+              Both
             </MenuItem>
             <Divider />
             <MenuItem key={1} value="yes">
@@ -189,7 +189,7 @@ class CallsTable extends Component {
             displayEmpty
           >
             <MenuItem key={0} value="">
-              Created At
+              Time Created
             </MenuItem>
             <Divider />
             <MenuItem key={1} value="asc">
