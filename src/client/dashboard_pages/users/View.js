@@ -221,6 +221,14 @@ class View extends Component {
             this.setState({
               pageErrors: pageErrors,
             });
+          } else if (error.response.status === 422) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
           }
         }
       });
