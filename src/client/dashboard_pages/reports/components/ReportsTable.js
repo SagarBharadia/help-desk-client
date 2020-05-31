@@ -15,8 +15,6 @@ import {
   Box,
 } from "@material-ui/core";
 
-import download from "downloadjs";
-
 class ReportsTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {

@@ -145,7 +145,7 @@ class UsersTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewUsers("previous")}
+            onClick={this.loadNewUsers.bind(this, "previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -153,7 +153,7 @@ class UsersTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewUsers("next")}
+            onClick={this.loadNewUsers.bind(this, "next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page

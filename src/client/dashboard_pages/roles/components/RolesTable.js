@@ -134,7 +134,7 @@ class RolesTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewRoles("previous")}
+            onClick={this.loadNewRoles.bind(this, "previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -142,7 +142,7 @@ class RolesTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewRoles("next")}
+            onClick={this.loadNewRoles.bind(this, "next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page

@@ -134,7 +134,7 @@ class ClientsTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewClients("previous")}
+            onClick={this.loadNewClients.bind(this, "previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -142,7 +142,7 @@ class ClientsTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewClients("next")}
+            onClick={this.loadNewClients.bind(this, "next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page
