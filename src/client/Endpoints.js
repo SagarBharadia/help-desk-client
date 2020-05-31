@@ -32,6 +32,9 @@ const Endpoints = {
     deleteCall: ":company_subdir/api/calls/delete",
     getAllCalls: ":company_subdir/api/calls/get/all",
     getSingleCall: ":company_subdir/api/calls/get/:id",
+
+    getAllReports: ":company_subdir/api/reports/get/all",
+    createReport: ":company_subdir/api/reports/create",
   },
 
   client: {
@@ -55,6 +58,7 @@ const Endpoints = {
     viewCall: "/:company_subdir/calls/:id",
 
     reportsArea: "/:company_subdir/reports",
+    createReport: "/:company_subdir/reports/create",
   },
 
   get: function (type, endpointName, data) {

@@ -55,7 +55,12 @@ class DashboardAppBar extends Component {
         company_subdir: this.company_subdir,
       }),
     },
-    { name: "Reports", link: "/reports" },
+    {
+      name: "Reports",
+      link: Endpoints.get("client", "reportsArea", {
+        company_subdir: this.company_subdir,
+      }),
+    },
   ];
 
   toggleDrawer = () => {
