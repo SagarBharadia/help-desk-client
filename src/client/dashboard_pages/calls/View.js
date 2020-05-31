@@ -523,9 +523,9 @@ class View extends Component {
                 transform: "translate(-50%, -50%)",
                 outline: 0,
                 padding: "20px",
-                width: "50vw",
-                minWidth: "360px",
-                maxWidth: "600px",
+                width: "75vw",
+                minWidth: "320px",
+                maxWidth: "800px",
               }}
             >
               <Typography component="h3" variant="h5">
@@ -570,9 +570,9 @@ class View extends Component {
                 transform: "translate(-50%, -50%)",
                 outline: 0,
                 padding: "20px",
-                width: "50vw",
-                minWidth: "360px",
-                maxWidth: "600px",
+                width: "75vw",
+                minWidth: "320px",
+                maxWidth: "800px",
               }}
             >
               <Typography component="h3" variant="h5">
