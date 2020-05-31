@@ -3,6 +3,16 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { Redirect } from "react-router-dom";
 import Endpoints from "../Endpoints";
+import Messages from "./layout/Messages";
+
+import {
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Divider,
+} from "@material-ui/core";
 
 class Login extends Component {
   company_subdir = this.props.match.params.company_subdir;
@@ -15,6 +25,8 @@ class Login extends Component {
       status: null,
       statusText: "",
     },
+    pageErrors: [],
+    pageMessages: [],
   };
 
   onChange = (e) => {
@@ -53,20 +65,23 @@ class Login extends Component {
           expires: res.data.expires_in / 1440,
         });
         this.setState({
-          response: {
-            status: res.status,
-            statusText: res.statusText,
-          },
+          pageMessages: [
+            {
+              text: "Successful.",
+              severity: "success",
+            },
+          ],
         });
         this.props.setAppState("authenticated", true);
       })
       .catch((error) => {
         if (error.response) {
+          const newPageErrors = [
+            ...this.state.pageErrors,
+            error.response.statusText,
+          ];
           this.setState({
-            response: {
-              status: error.response.status,
-              statusText: error.response.statusText,
-            },
+            pageErrors: newPageErrors,
           });
         }
       });
@@ -83,32 +98,62 @@ class Login extends Component {
     });
     return (
       <div>
-        <div>
-          <p>{this.state.response.statusText}</p>
-        </div>
-        <form onSubmit={this.onSubmit}>
-          <div>
-            <label htmlFor="email_address">Email Address</label>
-            <input
-              type="email"
-              name="email_address"
-              onChange={this.onChange}
-              value={this.state.email_address}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              name="password"
-              onChange={this.onChange}
-              value={this.state.password}
-              required
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
+        <Paper
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            outline: 0,
+            padding: "20px",
+            width: "30vw",
+            minWidth: "360px",
+            maxWidth: "600px",
+          }}
+        >
+          <Typography variant="h4" component="h1" align="center">
+            Login
+          </Typography>
+          <br />
+          <Typography
+            component="p"
+            align="center"
+            className="standard-margin-bottom"
+          >
+            Attempting to log in to: {this.company_subdir}
+          </Typography>
+          <Divider />
+          <Messages
+            pageErrors={this.state.pageErrors}
+            pageMessages={this.state.pageMessages}
+          />
+          <form onSubmit={this.onSubmit}>
+            <Box display="flex" flexDirection="column">
+              <TextField
+                type="email"
+                name="email_address"
+                onChange={this.onChange}
+                value={this.state.email_address}
+                label="Email Address"
+                className="standard-margin-bottom"
+                required
+              />
+              <TextField
+                type="password"
+                name="password"
+                onChange={this.onChange}
+                value={this.state.password}
+                label="Password"
+                className="standard-margin-bottom"
+                required
+              />
+              <Button type="submit" color="primary" variant="contained">
+                Login
+              </Button>
+            </Box>
+          </form>
+        </Paper>
+
         {this.props.authenticated ? (
           <Redirect to={loginRedirectIfSuccessful} />
         ) : null}
