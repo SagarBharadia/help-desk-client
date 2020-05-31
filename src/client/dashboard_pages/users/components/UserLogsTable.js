@@ -80,7 +80,6 @@ class UserLogsTable extends Component {
   };
 
   render() {
-    const { company_subdir } = { ...this.props };
     const { logs, prevPageURL, nextPageURL } = { ...this.state };
     return (
       <div>
