@@ -22,6 +22,10 @@
   float: right;
 }
 
+.red-table-row {
+  background-color: #ffcdd2;
+}
+
 /*
  * Bigger than XS breakpoint (0px)
  */

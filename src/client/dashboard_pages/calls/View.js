@@ -6,6 +6,9 @@ import { getBaseHeaders } from "../../Helpers";
 import Endpoints from "../../Endpoints";
 import { Link, Redirect } from "react-router-dom";
 
+import ErrorIcon from "@material-ui/icons/Error";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+
 import {
   Box,
   Breadcrumbs,
@@ -82,12 +85,15 @@ class View extends Component {
     errors: {
       updateDetails: [],
       tags: [],
+      reOpenCallReason: [],
     },
     pageMessages: [],
     pageErrors: [],
     created_at: "",
     updated_at: "",
     redirectToHome: false,
+    reOpenCallModalOpen: false,
+    reOpenCallReason: "",
   };
 
   resetErrors = () => {
@@ -97,6 +103,7 @@ class View extends Component {
       errors: {
         updateDetails: [],
         tags: [],
+        reOpenCallReason: [],
       },
     });
   };
@@ -238,6 +245,58 @@ class View extends Component {
               error.response.data.message,
             ];
             this.setState({ pageErrors: pageErrors, updateModalOpen: false });
+          }
+        }
+      });
+  };
+
+  reOpenCall = (e) => {
+    e.preventDefault();
+    const headers = getBaseHeaders();
+    const reopenCallEndpoint = Endpoints.get("api", "markCallAsUnsolved", {
+      company_subdir: this.company_subdir,
+      id: this.call_id,
+    });
+    const data = {
+      reason: this.state.reOpenCallReason,
+    };
+    this.resetErrors();
+    axios
+      .post(reopenCallEndpoint, data, headers)
+      .then((res) => {
+        this.setState({
+          reOpenCallReason: "",
+          reOpenCallModalOpen: false,
+        });
+      })
+      .then(() => {
+        this.getCall();
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 422) {
+            var newErrorsState = { ...this.state.errors };
+            const errorData = error.response.data;
+            if (errorData.reason)
+              newErrorsState.reOpenCallReason = errorData.reason;
+            this.setState({
+              errors: newErrorsState,
+            });
+          } else if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to update calls. Please contact your admin for this permission.",
+            ];
+            this.setState({ pageErrors: pageErrors });
+          } else if (error.response.status === 403) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+              reOpenCallModalOpen: false,
+            });
           }
         }
       });
@@ -390,6 +449,13 @@ class View extends Component {
       });
   };
 
+  toggleReOpenCallModal = () => {
+    const newState = !this.state.reOpenCallModalOpen;
+    this.setState({
+      reOpenCallModalOpen: newState,
+    });
+  };
+
   render() {
     const company_subdir = this.company_subdir;
     const {
@@ -413,6 +479,8 @@ class View extends Component {
       created_at,
       updated_at,
       redirectToHome,
+      reOpenCallModalOpen,
+      reOpenCallReason,
     } = { ...this.state };
     return (
       <DashboardWrapper {...this.props}>
@@ -443,6 +511,56 @@ class View extends Component {
               {name.length > 20 ? name.substr(0, 20) + "..." : name}
             </Typography>
           </Breadcrumbs>
+          <Modal
+            open={reOpenCallModalOpen}
+            onClose={this.toggleReOpenCallModal}
+          >
+            <Paper
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                outline: 0,
+                padding: "20px",
+                width: "50vw",
+                minWidth: "360px",
+                maxWidth: "600px",
+              }}
+            >
+              <Typography component="h3" variant="h5">
+                Reopen Call
+              </Typography>
+              <Divider className="standard-margin-bottom" />
+              <form onSubmit={this.reOpenCall}>
+                {errors.reOpenCallReason.map((error, index) => (
+                  <Alert
+                    variant="filled"
+                    severity="error"
+                    className="standard-margin-bottom"
+                    key={"reOpenCallReason-" + index}
+                  >
+                    {error}
+                  </Alert>
+                ))}
+                <TextField
+                  name="reOpenCallReason"
+                  type="string"
+                  multiline
+                  label="Reason for reopening"
+                  onChange={this.onChange}
+                  value={reOpenCallReason}
+                  className="xs-full-width standard-margin-bottom"
+                  error={errors.reOpenCallReason.length > 0 ? true : false}
+                  rowsMax={Infinity}
+                  required
+                />
+                <Button type="submit" variant="contained" color="secondary">
+                  reopen call
+                </Button>
+              </form>
+            </Paper>
+          </Modal>
           <Modal open={updateModalOpen} onClose={this.toggleUpdateModal}>
             <Paper
               style={{
@@ -605,34 +723,56 @@ class View extends Component {
             flexWrap="wrap"
             alignItems="center"
           >
-            <Typography
-              component="h1"
-              variant="h5"
-              className="xs-full-width md-three-quarter-width standard-margin-bottom"
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              className="xs-full-width md-half-width standard-margin-bottom"
             >
-              {name}
-            </Typography>
+              <Typography component="h1" variant="h5">
+                {name}
+              </Typography>
+              &emsp;
+              {resolved === true ? (
+                <CheckCircleIcon style={{ color: "#2ecc71" }} />
+              ) : (
+                <ErrorIcon style={{ color: "#e74c3c" }} />
+              )}
+            </Box>
             <Box
               display="flex"
               flexDirection="row"
               justifyContent="space-between"
               flexWrap="wrap"
-              className="md-quarter-width xs-full-width"
+              className="md-half-width xs-full-width"
             >
-              <Button
-                type="button"
-                variant="contained"
-                color="primary"
-                className="xs-full-width md-half-width standard-margin-bottom"
-                onClick={this.toggleUpdateModal}
-              >
-                Update
-              </Button>
+              {resolved === true ? (
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  className="xs-full-width md-half-width standard-margin-bottom"
+                  onClick={this.toggleReOpenCallModal}
+                >
+                  Reopen Call
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  className="xs-full-width md-half-width standard-margin-bottom"
+                  onClick={this.toggleUpdateModal}
+                >
+                  Update
+                </Button>
+              )}
+
               <Button
                 type="button"
                 variant="contained"
                 color="secondary"
-                className="xs-full-width md-half-width standard-margin-bottom"
+                className="xs-full-width md-third-width standard-margin-bottom"
                 onClick={this.deleteCall}
               >
                 Delete

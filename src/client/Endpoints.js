@@ -32,6 +32,8 @@ const Endpoints = {
     deleteCall: ":company_subdir/api/calls/delete",
     getAllCalls: ":company_subdir/api/calls/get/all",
     getSingleCall: ":company_subdir/api/calls/get/:id",
+    searchCalls: ":company_subdir/api/calls/search",
+    markCallAsUnsolved: ":company_subdir/api/calls/:id/unsolved",
 
     getAllReports: ":company_subdir/api/reports/get/all",
     createReport: ":company_subdir/api/reports/create",

@@ -132,6 +132,8 @@ class CallsTable extends Component {
     } = {
       ...this.state,
     };
+    let dateRightNow = new Date();
+    const timeRightNowUnix = dateRightNow.getTime() / 1000;
     return (
       <div>
         <Box
@@ -229,8 +231,19 @@ class CallsTable extends Component {
             <TableBody>
               {Object.keys(calls).map((key) => {
                 let call = calls[key];
+                let callWasCreatedAt =
+                  new Date(call.created_at).getTime() / 1000;
+                const diffTime = Math.abs(timeRightNowUnix - callWasCreatedAt);
+                const diffHours = Math.ceil(diffTime / 60 / 60);
                 return (
-                  <TableRow key={call.id}>
+                  <TableRow
+                    className={
+                      diffHours > 24 && call.resolved === 0
+                        ? "red-table-row"
+                        : ""
+                    }
+                    key={call.id}
+                  >
                     <TableCell component="th" scope="row">
                       {call.id}
                     </TableCell>
