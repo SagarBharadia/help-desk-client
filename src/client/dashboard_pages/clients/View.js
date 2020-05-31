@@ -14,6 +14,11 @@ import {
   TextField,
   Divider,
   Button,
+  TableBody,
+  Table,
+  TableRow,
+  TableCell,
+  TableHead,
 } from "@material-ui/core";
 
 import { Alert } from "@material-ui/lab";
@@ -34,6 +39,9 @@ class View extends Component {
     },
     pageMessages: [],
     pageErrors: [],
+    clientCalls: [],
+    nextPageURL: "",
+    prevPageURL: "",
   };
 
   resetErrors = () => {
@@ -52,6 +60,69 @@ class View extends Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
+  };
+
+  getClientCalls() {
+    const headers = getBaseHeaders();
+    const getClientCalls = Endpoints.get("api", "getClientCalls", {
+      company_subdir: this.company_subdir,
+      client_id: this.client_id,
+    });
+    axios
+      .get(getClientCalls, headers)
+      .then((res) => {
+        this.setState({
+          clientCalls: res.data.data,
+          nextPageURL: res.data.next_page_url,
+          prevPageURL: res.data.prev_page_url,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to view client. Please contact your admin for this permission.",
+            ];
+            this.setState({
+              pageErrors: pageErrors,
+            });
+          }
+        }
+      });
+  }
+
+  loadNewCalls = (direction) => {
+    let headers = getBaseHeaders();
+    headers.params = {
+      handled_by: this.state.handledBy,
+      created_at: this.state.createdAt,
+      resolved: this.state.resolved,
+    };
+    let endpoint = this.state.nextPageURL;
+    if (direction === "previous") {
+      endpoint = this.state.prevPageURL;
+    }
+    axios
+      .get(endpoint, headers)
+      .then((res) => {
+        this.setState({
+          calls: res.data.data,
+          nextPageURL: res.data.next_page_url,
+          prevPageURL: res.data.prev_page_url,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.props.pageErrors,
+              "Unauthorized to view client. Please contact your admin for this permission.",
+            ];
+            this.props.setPageErrors(pageErrors);
+          }
+        }
+      });
   };
 
   getClient() {
@@ -143,6 +214,7 @@ class View extends Component {
 
   componentDidMount() {
     this.getClient();
+    this.getClientCalls();
   }
 
   render() {
@@ -154,9 +226,14 @@ class View extends Component {
       name,
       phone_number,
       email_address,
+      clientCalls,
+      nextPageURL,
+      prevPageURL,
     } = {
       ...this.state,
     };
+    let dateRightNow = new Date();
+    const timeRightNowUnix = dateRightNow.getTime() / 1000;
     return (
       <DashboardWrapper {...this.props}>
         <main>
@@ -273,6 +350,81 @@ class View extends Component {
               Update Client
             </Button>
           </form>
+          <br />
+          <Typography variant="h5" component="h3">
+            Clients Calls
+          </Typography>
+          <Table
+            className="standard-margin-bottom"
+            aria-label="table containing this clients calls"
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Object.keys(clientCalls).map((key) => {
+                let call = clientCalls[key];
+                let callWasCreatedAt =
+                  new Date(call.created_at).getTime() / 1000;
+                const diffTime = Math.abs(timeRightNowUnix - callWasCreatedAt);
+                const diffHours = Math.ceil(diffTime / 60 / 60);
+                return (
+                  <TableRow
+                    className={
+                      diffHours > 24 && call.resolved === 0
+                        ? "red-table-row"
+                        : ""
+                    }
+                    key={call.id}
+                  >
+                    <TableCell component="th" scope="row">
+                      {call.name}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        component={Link}
+                        variant="contained"
+                        color="primary"
+                        to={Endpoints.get("client", "viewCall", {
+                          company_subdir: company_subdir,
+                          id: call.id,
+                        })}
+                      >
+                        View
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          <Box
+            display="flex"
+            flexDirection="row"
+            flexWrap="wrap"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={this.loadNewCalls.bind(this, "previous")}
+              disabled={prevPageURL === null ? true : false}
+            >
+              Previous Page
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={this.loadNewCalls.bind(this, "next")}
+              disabled={nextPageURL === null ? true : false}
+            >
+              Next Page
+            </Button>
+          </Box>
         </main>
       </DashboardWrapper>
     );

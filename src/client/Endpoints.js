@@ -27,6 +27,7 @@ const Endpoints = {
     deleteClient: ":company_subdir/api/clients/delete",
     getAllClients: ":company_subdir/api/clients/get/all",
     getSingleClient: ":company_subdir/api/clients/get/:id",
+    getClientCalls: ":company_subdir/api/clients/get/:client_id/calls",
 
     createCall: ":company_subdir/api/calls/create",
     updateCall: ":company_subdir/api/calls/update",
