@@ -42,6 +42,9 @@ class Create extends Component {
     errors: {
       name: [],
       description: [],
+      call_turnaround_times: [],
+      calls_open_past_24_hours: [],
+      staff_turnaround_times: [],
     },
     pageMessages: [],
     pageErrors: [],
@@ -54,6 +57,9 @@ class Create extends Component {
       errors: {
         name: [],
         description: [],
+        call_turnaround_times: [],
+        calls_open_past_24_hours: [],
+        staff_turnaround_times: [],
       },
     });
   };
@@ -80,21 +86,21 @@ class Create extends Component {
     });
     let options = {};
     if (this.state.staffTurnaroundTimes) {
-      options["staff-turnaround-times"] = {
-        "start-date": this.state.startDateStaffTurnaroundTimes,
-        "end-date": this.state.endDateStaffTurnaroundTimes,
+      options["staff_turnaround_times"] = {
+        start_date: this.state.startDateStaffTurnaroundTimes,
+        end_date: this.state.endDateStaffTurnaroundTimes,
       };
     }
     if (this.state.callTurnaroundTimes) {
-      options["call-turnaround-times"] = {
-        "start-date": this.state.startDateCallTurnaroundTimes,
-        "end-date": this.state.endDateCallTurnaroundTimes,
+      options["call_turnaround_times"] = {
+        start_date: this.state.startDateCallTurnaroundTimes,
+        end_date: this.state.endDateCallTurnaroundTimes,
       };
     }
     if (this.state.callsOpenPast24Hours) {
-      options["calls-open-past-24-hours"] = {
-        "start-date": this.state.startDateCallsOpenPast24Hours,
-        "end-date": this.state.endDateCallsOpenPast24Hours,
+      options["calls_open_past_24_hours"] = {
+        start_date: this.state.startDateCallsOpenPast24Hours,
+        end_date: this.state.endDateCallsOpenPast24Hours,
       };
     }
     let data = {
@@ -135,14 +141,28 @@ class Create extends Component {
       .catch((error) => {
         if (error.response) {
           if (error.response.status === 422) {
-            var newErrorsState = { ...this.state.errors };
-            const errorData = error.response.data;
-            if (errorData.name) newErrorsState.name = errorData.name;
-            if (errorData.description)
-              newErrorsState.description = errorData.description;
-            this.setState({
-              errors: newErrorsState,
-            });
+            const blobErrorData = error.response.data;
+            blobErrorData
+              .text()
+              .then((errors) => JSON.parse(errors))
+              .then((errorData) => {
+                var newErrorsState = { ...this.state.errors };
+                if (errorData.name) newErrorsState.name = errorData.name;
+                if (errorData.description)
+                  newErrorsState.description = errorData.description;
+                if (errorData.call_turnaround_times)
+                  newErrorsState.call_turnaround_times =
+                    errorData.call_turnaround_times;
+                if (errorData.calls_open_past_24_hours)
+                  newErrorsState.calls_open_past_24_hours =
+                    errorData.calls_open_past_24_hours;
+                if (errorData.staff_turnaround_times)
+                  newErrorsState.staff_turnaround_times =
+                    errorData.staff_turnaround_times;
+                this.setState({
+                  errors: newErrorsState,
+                });
+              });
           } else if (error.response.status === 401) {
             const pageErrors = [
               ...this.state.pageErrors,
@@ -295,30 +315,45 @@ class Create extends Component {
                 {callTurnaroundTimes ? (
                   <Box
                     display="flex"
-                    flexDirection="row"
-                    className="xs-full-width"
+                    flexDirection="column"
+                    className="xs-full-width standard-margin-bottom"
                   >
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">Start Date</Typography>
-                      <TextField
-                        id="start-date-callTurnaroundTimes"
-                        type="date"
-                        name="startDateCallTurnaroundTimes"
-                        value={startDateCallTurnaroundTimes}
-                        onChange={this.onChange}
-                        required
-                      />
-                    </Box>
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">End Date</Typography>
-                      <TextField
-                        id="end-date-callTurnaroundTimes"
-                        type="date"
-                        name="endDateCallTurnaroundTimes"
-                        value={endDateCallTurnaroundTimes}
-                        onChange={this.onChange}
-                        required
-                      />
+                    {errors.call_turnaround_times.map((error, index) => (
+                      <Alert
+                        variant="filled"
+                        severity="error"
+                        key={"callTurnaroundTimes-" + index}
+                      >
+                        {error}
+                      </Alert>
+                    ))}
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      className="xs-full-width"
+                    >
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">Start Date</Typography>
+                        <TextField
+                          id="start-date-callTurnaroundTimes"
+                          type="date"
+                          name="startDateCallTurnaroundTimes"
+                          value={startDateCallTurnaroundTimes}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">End Date</Typography>
+                        <TextField
+                          id="end-date-callTurnaroundTimes"
+                          type="date"
+                          name="endDateCallTurnaroundTimes"
+                          value={endDateCallTurnaroundTimes}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
                     </Box>
                   </Box>
                 ) : null}
@@ -335,30 +370,46 @@ class Create extends Component {
                 {staffTurnaroundTimes ? (
                   <Box
                     display="flex"
-                    flexDirection="row"
-                    className="xs-full-width"
+                    flexDirection="column"
+                    className="xs-full-width standard-margin-bottom"
                   >
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">Start Date</Typography>
-                      <TextField
-                        id="start-date-staffTurnaroundTimes"
-                        type="date"
-                        name="startDateStaffTurnaroundTimes"
-                        value={startDateStaffTurnaroundTimes}
-                        onChange={this.onChange}
-                        required
-                      />
-                    </Box>
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">End Date</Typography>
-                      <TextField
-                        id="end-date-staffTurnaroundTimes"
-                        type="date"
-                        name="endDateStaffTurnaroundTimes"
-                        value={endDateStaffTurnaroundTimes}
-                        onChange={this.onChange}
-                        required
-                      />
+                    {errors.staff_turnaround_times.map((error, index) => (
+                      <Alert
+                        variant="filled"
+                        severity="error"
+                        className="standard-margin-bottom"
+                        key={"staffTurnaroundtimes-" + index}
+                      >
+                        {error}
+                      </Alert>
+                    ))}
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      className="xs-full-width"
+                    >
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">Start Date</Typography>
+                        <TextField
+                          id="start-date-staffTurnaroundTimes"
+                          type="date"
+                          name="startDateStaffTurnaroundTimes"
+                          value={startDateStaffTurnaroundTimes}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">End Date</Typography>
+                        <TextField
+                          id="end-date-staffTurnaroundTimes"
+                          type="date"
+                          name="endDateStaffTurnaroundTimes"
+                          value={endDateStaffTurnaroundTimes}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
                     </Box>
                   </Box>
                 ) : null}
@@ -375,30 +426,46 @@ class Create extends Component {
                 {callsOpenPast24Hours ? (
                   <Box
                     display="flex"
-                    flexDirection="row"
-                    className="xs-full-width"
+                    flexDirection="column"
+                    className="xs-full-width standard-margin-bottom"
                   >
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">Start Date</Typography>
-                      <TextField
-                        id="start-date-callsOpenPast24Hours"
-                        type="date"
-                        name="startDateCallsOpenPast24Hours"
-                        value={startDateCallsOpenPast24Hours}
-                        onChange={this.onChange}
-                        required
-                      />
-                    </Box>
-                    <Box className="xs-full-width md-half-width">
-                      <Typography variant="h6">End Date</Typography>
-                      <TextField
-                        id="end-date-callsOpenPast24Hours"
-                        type="date"
-                        name="endDateCallsOpenPast24Hours"
-                        value={endDateCallsOpenPast24Hours}
-                        onChange={this.onChange}
-                        required
-                      />
+                    {errors.calls_open_past_24_hours.map((error, index) => (
+                      <Alert
+                        variant="filled"
+                        severity="error"
+                        className="standard-margin-bottom"
+                        key={"callsOpenPast24Hours-" + index}
+                      >
+                        {error}
+                      </Alert>
+                    ))}
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      className="xs-full-width"
+                    >
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">Start Date</Typography>
+                        <TextField
+                          id="start-date-callsOpenPast24Hours"
+                          type="date"
+                          name="startDateCallsOpenPast24Hours"
+                          value={startDateCallsOpenPast24Hours}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
+                      <Box className="xs-full-width md-half-width">
+                        <Typography variant="h6">End Date</Typography>
+                        <TextField
+                          id="end-date-callsOpenPast24Hours"
+                          type="date"
+                          name="endDateCallsOpenPast24Hours"
+                          value={endDateCallsOpenPast24Hours}
+                          onChange={this.onChange}
+                          required
+                        />
+                      </Box>
                     </Box>
                   </Box>
                 ) : null}

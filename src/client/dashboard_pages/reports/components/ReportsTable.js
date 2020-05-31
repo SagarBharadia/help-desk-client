@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import { getBaseHeaders } from "../../../Helpers";
