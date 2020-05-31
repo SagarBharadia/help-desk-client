@@ -944,7 +944,7 @@ class View extends Component {
               to={
                 Endpoints.get("client", "callsArea", {
                   company_subdir: this.company_subdir,
-                }) + "?delete=success"
+                }) + "?deleted=success"
               }
             />
           ) : (
