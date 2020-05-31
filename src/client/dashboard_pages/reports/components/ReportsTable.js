@@ -15,6 +15,8 @@ import {
   Box,
 } from "@material-ui/core";
 
+import download from "downloadjs";
+
 class ReportsTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
@@ -78,6 +80,24 @@ class ReportsTable extends Component {
       });
   };
 
+  downloadReport = (reportId, reportName) => {
+    let headers = getBaseHeaders();
+    headers.responseType = "blob";
+    let downloadReportEndpoint = Endpoints.get("api", "downloadReport", {
+      company_subdir: this.company_subdir,
+      id: reportId,
+    });
+    axios.get(downloadReportEndpoint, headers).then((blob) => {
+      const url = window.URL.createObjectURL(blob.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", reportName + ".pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    });
+  };
+
   render() {
     const { reports, prevPageURL, nextPageURL } = { ...this.state };
     return (
@@ -105,7 +125,15 @@ class ReportsTable extends Component {
                     <TableCell align="right">{report.description}</TableCell>
                     <TableCell align="right">{report.created_at}</TableCell>
                     <TableCell align="right">
-                      <Button variant="contained" color="secondary">
+                      <Button
+                        onClick={this.downloadReport.bind(
+                          null,
+                          report.id,
+                          report.name
+                        )}
+                        variant="contained"
+                        color="secondary"
+                      >
                         Download
                       </Button>
                     </TableCell>

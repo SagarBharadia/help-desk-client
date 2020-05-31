@@ -35,6 +35,7 @@ const Endpoints = {
 
     getAllReports: ":company_subdir/api/reports/get/all",
     createReport: ":company_subdir/api/reports/create",
+    downloadReport: ":company_subdir/api/reports/download/:id",
   },
 
   client: {
