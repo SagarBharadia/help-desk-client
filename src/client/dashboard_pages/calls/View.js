@@ -418,12 +418,7 @@ class View extends Component {
       .post(deletePostEndpoint, data, headers)
       .then((res) => {
         this.setState({
-          pageMessages: [
-            {
-              text: res.data.message,
-              severity: "success",
-            },
-          ],
+          redirectToHome: true,
         });
       })
       .catch((error) => {
