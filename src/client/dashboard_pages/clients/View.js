@@ -4,7 +4,7 @@ import axios from "axios";
 import { getBaseHeaders } from "../../Helpers";
 
 import Endpoints from "../../Endpoints";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import {
   Box,
@@ -42,6 +42,7 @@ class View extends Component {
     clientCalls: [],
     nextPageURL: "",
     prevPageURL: "",
+    redirectToHome: false,
   };
 
   resetErrors = () => {
@@ -163,6 +164,41 @@ class View extends Component {
       });
   }
 
+  deleteClient = () => {
+    const headers = getBaseHeaders();
+    const deleteClient = Endpoints.get("api", "deleteClient", {
+      company_subdir: this.company_subdir,
+    });
+    let data = {
+      client_id: this.client_id,
+    };
+    this.resetErrors();
+    axios
+      .post(deleteClient, data, headers)
+      .then((res) => {
+        this.setState({
+          redirectToHome: true,
+        });
+      })
+      .catch((error) => {
+        if (error.response) {
+          if (error.response.status === 401) {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              "Unauthorized to update clients. Please contact your admin for this permission.",
+            ];
+            this.setState({ pageErrors: pageErrors });
+          } else {
+            const pageErrors = [
+              ...this.state.pageErrors,
+              error.response.data.message,
+            ];
+            this.setState({ pageErrors: pageErrors });
+          }
+        }
+      });
+  };
+
   updateClient = (e) => {
     e.preventDefault();
     const headers = getBaseHeaders();
@@ -229,6 +265,7 @@ class View extends Component {
       clientCalls,
       nextPageURL,
       prevPageURL,
+      redirectToHome,
     } = {
       ...this.state,
     };
@@ -270,7 +307,10 @@ class View extends Component {
           </Typography>
           <Divider className="standard-margin-bottom" />
           <Messages pageErrors={pageErrors} pageMessages={pageMessages} />
-          <form className="xs-full-width" onSubmit={this.updateClient}>
+          <form
+            className="xs-full-width standard-margin-bottom"
+            onSubmit={this.updateClient}
+          >
             <Box
               display="flex"
               flexDirection="column"
@@ -342,12 +382,21 @@ class View extends Component {
             </Box>
 
             <Button
-              className="xs-full-width"
+              className="xs-full-width standard-margin-bottom"
               type="submit"
               variant="contained"
               color="primary"
             >
               Update Client
+            </Button>
+            <Button
+              className="xs-full-width"
+              type="button"
+              variant="contained"
+              color="secondary"
+              onClick={this.deleteClient}
+            >
+              Delete Client
             </Button>
           </form>
           <br />
@@ -425,6 +474,17 @@ class View extends Component {
               Next Page
             </Button>
           </Box>
+          {redirectToHome ? (
+            <Redirect
+              to={
+                Endpoints.get("client", "clientsArea", {
+                  company_subdir: this.company_subdir,
+                }) + "?deleted=success"
+              }
+            />
+          ) : (
+            ""
+          )}
         </main>
       </DashboardWrapper>
     );
