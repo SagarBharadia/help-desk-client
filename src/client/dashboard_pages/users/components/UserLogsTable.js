@@ -1,10 +1,7 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import Endpoints from "../../../Endpoints";
 import axios from "axios";
 import { getBaseHeaders } from "../../../Helpers";
-import ErrorIcon from "@material-ui/icons/Error";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import {
   Table,
@@ -18,24 +15,25 @@ import {
   Box,
 } from "@material-ui/core";
 
-class UsersTable extends Component {
+class UserLogsTable extends Component {
   company_subdir = this.props.company_subdir;
   state = {
-    users: {},
+    logs: {},
     prevPageURL: null,
     nextPageURL: null,
   };
 
   componentDidMount() {
-    const getAllUsersEndpoint = Endpoints.get("api", "getAllUsers", {
+    const getUserLogs = Endpoints.get("api", "getUserLogs", {
       company_subdir: this.company_subdir,
+      id: this.props.user_id,
     });
     const headers = getBaseHeaders();
     axios
-      .get(getAllUsersEndpoint, headers)
+      .get(getUserLogs, headers)
       .then((res) => {
         this.setState({
-          users: res.data.data,
+          logs: res.data.data,
           nextPageURL: res.data.next_page_url,
           prevPageURL: res.data.prev_page_url,
         });
@@ -45,7 +43,7 @@ class UsersTable extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.props.pageErrors,
-              "Unauthorized to read users. Please contact your admin for this permission.",
+              "Unauthorized to read user logs. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);
           }
@@ -53,7 +51,7 @@ class UsersTable extends Component {
       });
   }
 
-  loadNewUsers = (direction) => {
+  loadNewLogs = (direction) => {
     let headers = getBaseHeaders();
     let endpoint = this.state.nextPageURL;
     if (direction === "previous") {
@@ -63,7 +61,7 @@ class UsersTable extends Component {
       .get(endpoint, headers)
       .then((res) => {
         this.setState({
-          users: res.data.data,
+          logs: res.data.data,
           nextPageURL: res.data.next_page_url,
           prevPageURL: res.data.prev_page_url,
         });
@@ -73,7 +71,7 @@ class UsersTable extends Component {
           if (error.response.status === 401) {
             const pageErrors = [
               ...this.props.pageErrors,
-              "Unauthorized to view users. Please contact your admin for this permission.",
+              "Unauthorized to view user logs. Please contact your admin for this permission.",
             ];
             this.props.setPageErrors(pageErrors);
           }
@@ -83,52 +81,28 @@ class UsersTable extends Component {
 
   render() {
     const { company_subdir } = { ...this.props };
-    const { users, prevPageURL, nextPageURL } = { ...this.state };
+    const { logs, prevPageURL, nextPageURL } = { ...this.state };
     return (
       <div>
         <TableContainer component={Paper} className="standard-margin-bottom">
           <Table aria-label="table containing the users">
             <TableHead>
               <TableRow>
-                <TableCell>#</TableCell>
-                <TableCell align="right">Name</TableCell>
-                <TableCell align="right">Email Address</TableCell>
-                <TableCell align="right">Active</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell align="right">Time</TableCell>
+                <TableCell align="right">Action</TableCell>
+                <TableCell align="right">Details</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.keys(users).map((key) => {
-                let user = users[key];
+              {Object.keys(logs).map((key) => {
+                let log = logs[key];
                 return (
-                  <TableRow key={user.id}>
+                  <TableRow key={log.id}>
                     <TableCell component="th" scope="row">
-                      {user.id}
+                      {log.created_at}
                     </TableCell>
-                    <TableCell align="right">
-                      {user.first_name + " " + user.second_name}
-                    </TableCell>
-                    <TableCell align="right">{user.email_address}</TableCell>
-                    <TableCell align="right">
-                      {user.active === 1 ? (
-                        <CheckCircleIcon style={{ color: "#2ecc71" }} />
-                      ) : (
-                        <ErrorIcon style={{ color: "#e74c3c" }} />
-                      )}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Button
-                        component={Link}
-                        variant="contained"
-                        color="primary"
-                        to={Endpoints.get("client", "viewUser", {
-                          company_subdir: company_subdir,
-                          id: user.id,
-                        })}
-                      >
-                        View
-                      </Button>
-                    </TableCell>
+                    <TableCell align="right">{log.log_action.name}</TableCell>
+                    <TableCell align="right">{log.details}</TableCell>
                   </TableRow>
                 );
               })}
@@ -145,7 +119,7 @@ class UsersTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewUsers.bind(this, "previous")}
+            onClick={this.loadNewLogs.bind(this, "previous")}
             disabled={prevPageURL === null ? true : false}
           >
             Previous Page
@@ -153,7 +127,7 @@ class UsersTable extends Component {
           <Button
             variant="contained"
             color="secondary"
-            onClick={this.loadNewUsers.bind(this, "next")}
+            onClick={this.loadNewLogs.bind(this, "next")}
             disabled={nextPageURL === null ? true : false}
           >
             Next Page
@@ -164,4 +138,4 @@ class UsersTable extends Component {
   }
 }
 
-export default UsersTable;
+export default UserLogsTable;

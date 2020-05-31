@@ -15,6 +15,7 @@ import Dashboard from "../dashboard_pages/Dashboard";
 import { default as UsersHome } from "../dashboard_pages/users/Home";
 import { default as UsersCreate } from "../dashboard_pages/users/Create";
 import { default as UsersView } from "../dashboard_pages/users/View";
+import { default as UsersLogs } from "../dashboard_pages/users/Logs";
 
 // Importing Role Pages
 import { default as RolesHome } from "../dashboard_pages/roles/Home";
@@ -76,6 +77,13 @@ class Routes extends React.Component {
             path={Endpoints.getRaw("client", "viewUser")}
             render={(props) => (
               <Guarded page={UsersView} {...this.props} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path={Endpoints.getRaw("client", "userLogs")}
+            render={(props) => (
+              <Guarded page={UsersLogs} {...this.props} {...props} />
             )}
           />
           <Route

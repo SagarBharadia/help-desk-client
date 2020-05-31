@@ -12,6 +12,7 @@ const Endpoints = {
     toggleActiveUser: ":company_subdir/api/users/toggleActive",
     getAllUsers: ":company_subdir/api/users/get/all",
     getSingleUser: ":company_subdir/api/users/get/:id",
+    getUserLogs: ":company_subdir/api/users/:id/logs",
 
     createRole: ":company_subdir/api/roles/create",
     updateRole: ":company_subdir/api/roles/update",
@@ -48,6 +49,7 @@ const Endpoints = {
     usersArea: "/:company_subdir/users",
     createUser: "/:company_subdir/users/create",
     viewUser: "/:company_subdir/users/:id",
+    userLogs: "/:company_subdir/users/:id/logs",
 
     rolesArea: "/:company_subdir/roles",
     createRole: "/:company_subdir/roles/create",

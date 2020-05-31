@@ -484,7 +484,10 @@ class View extends Component {
                 component={Link}
                 variant="contained"
                 color="default"
-                to={"#NEEDTODO"}
+                to={Endpoints.get("client", "userLogs", {
+                  company_subdir: this.company_subdir,
+                  id: this.user_id,
+                })}
               >
                 View Action Logs
               </Button>
