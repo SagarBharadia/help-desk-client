@@ -142,10 +142,13 @@ class Create extends Component {
     let updatedAppliedPermissions = this.state.appliedPermissions;
     if (!e.target.checked) {
       updatedAppliedPermissions = updatedAppliedPermissions.filter(
-        (perm) => perm !== e.target.name
+        (perm) => perm !== e.target.value
       );
     } else {
-      updatedAppliedPermissions = [...updatedAppliedPermissions, e.target.name];
+      updatedAppliedPermissions = [
+        ...updatedAppliedPermissions,
+        e.target.value,
+      ];
     }
     this.setState({
       appliedPermissions: updatedAppliedPermissions,
@@ -154,7 +157,14 @@ class Create extends Component {
 
   render() {
     const company_subdir = this.company_subdir;
-    const { pageMessages, pageErrors, errors, name, display_name } = {
+    const {
+      pageMessages,
+      pageErrors,
+      errors,
+      name,
+      display_name,
+      appliedPermissions,
+    } = {
       ...this.state,
     };
     return (
@@ -270,8 +280,11 @@ class Create extends Component {
                       <FormControlLabel
                         control={
                           <Checkbox
-                            name={permissionAction.action}
                             onChange={this.onPermissionActionChange}
+                            value={permissionAction.action}
+                            checked={appliedPermissions.includes(
+                              permissionAction.action
+                            )}
                           />
                         }
                         label={permissionAction.name}
