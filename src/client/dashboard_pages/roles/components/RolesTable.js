@@ -61,7 +61,7 @@ class RolesTable extends Component {
       .get(endpoint, headers)
       .then((res) => {
         this.setState({
-          clients: res.data.data,
+          roles: res.data.data,
           nextPageURL: res.data.next_page_url,
           prevPageURL: res.data.prev_page_url,
         });
