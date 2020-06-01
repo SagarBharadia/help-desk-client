@@ -41,49 +41,54 @@ class Guarded extends Component {
     }
   }
   render() {
-    var cardStyle = {
-      maxWidth: "300px",
-      marginLeft: "auto",
-      marginRight: "auto",
-    };
-
     return (
       <div>
         {this.state.allowed && this.props.authenticated ? (
           <this.props.page {...this.props} />
         ) : this.props.authenticated ? (
-          <div className="flex-center">
-            <Card style={cardStyle} variant="outlined">
-              <CardContent>
-                <Typography variant="h4" component="h1" gutterBottom>
-                  Uh oh.
-                </Typography>
-                <Typography component="p">
-                  Looks like you got lost while trying to find your help desk.
-                  Buuut just in case this was intentional, feel free to choose
-                  from the options below.
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button
-                  href={this.yourHelpDeskHref}
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  style={{ textAlign: "center" }}
-                >
-                  Go To Your Help Desk
-                </Button>
-                <Button
-                  onClick={this.loginToThisHelpDesk}
-                  variant="contained"
-                  size="small"
-                >
-                  Log In To This Help Desk
-                </Button>
-              </CardActions>
-            </Card>
-          </div>
+          <Card
+            style={{
+              position: "absolute",
+              top: "35%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              outline: 0,
+              padding: "20px",
+              width: "75vw",
+              minWidth: "320px",
+              maxWidth: "800px",
+            }}
+            variant="outlined"
+          >
+            <CardContent>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Uh oh.
+              </Typography>
+              <Typography component="p">
+                Looks like you got lost while trying to find your help desk.
+                Buuut just in case this was intentional, feel free to choose
+                from the options below.
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button
+                href={this.yourHelpDeskHref}
+                variant="contained"
+                color="primary"
+                size="small"
+                style={{ textAlign: "center" }}
+              >
+                Go To Your Help Desk
+              </Button>
+              <Button
+                onClick={this.loginToThisHelpDesk}
+                variant="contained"
+                size="small"
+              >
+                Log In To This Help Desk
+              </Button>
+            </CardActions>
+          </Card>
         ) : this.state.redirectToThisHelpDesk ? (
           <Redirect to={this.loginToThisHelpDeskHref} />
         ) : (
