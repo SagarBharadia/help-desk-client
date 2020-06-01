@@ -197,7 +197,7 @@ class Create extends Component {
               ))}
               <TextField
                 name="email_address"
-                type="string"
+                type="email"
                 label="Email Address"
                 onChange={this.onChange}
                 value={email_address}

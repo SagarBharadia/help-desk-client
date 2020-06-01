@@ -41,8 +41,8 @@ class View extends Component {
     first_name: "Loading...",
     second_name: "Loading...",
     email_address: "Loading...",
-    new_password: "",
-    new_password_confirmation: "",
+    password: "",
+    password_confirmation: "",
     role: "",
     active: 0,
     roleOnShow: {
