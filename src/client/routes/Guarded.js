@@ -24,6 +24,8 @@ class Guarded extends Component {
     Cookies.remove("token");
     Cookies.remove("token-type");
     Cookies.remove("auth-company-subdir");
+    Cookies.remove("auth-company-name");
+    Cookies.remove("user-name");
     this.setState({
       redirectToThisHelpDesk: true,
     });
